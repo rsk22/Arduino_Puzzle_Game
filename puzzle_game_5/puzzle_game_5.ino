@@ -74,6 +74,8 @@ void loop()
 // Displays the title screen
 void titleScreen()
 {
+  Tft.drawRectangle(10, 10, 30, 30, GREEN);
+  
   Tft.drawString("SLIDING PUZZLE GAME",4,10,1,YELLOW);
   Tft.drawString("by GARRY SPENCER",23,35,1,WHITE);
   Tft.drawString("& RICHARD KIRKPATRICK", 23, 50, 1, WHITE);
@@ -266,5 +268,7 @@ void drawTiles(int tiles[][4])
 {
   //   
 }
+
+
 
 
