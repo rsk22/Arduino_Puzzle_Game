@@ -56,8 +56,8 @@ const int xminButton[] = {1, 60, 119, 178};  // x-min for buttons
 const int xmaxButton[] = {60, 119, 178, 237}; // x-max for buttons
 const int yminButton[] = {26, 85, 144, 203}; // y-min for buttons
 const int ymaxButton[] = {85, 144, 203, 262}; // y-max for buttons
-const int xButtonText[] = {25, 85, 145, 205}; // x-coordinates for the buttons' text
-const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
+const int xButtonText[] = {25, 85, 145, 185}; // x-coordinates for the buttons' text
+const int yButtonText[] = {45, 105, 165, 205}; // y-coordinates for the buttons' text
 char* buttonText[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"};
 
 Button tiles[16]; 
@@ -106,23 +106,27 @@ void displayGameScreen()
   Tft.fillRectangle(40,295,160,22,CYAN);
   Tft.drawString("NEW GAME",55,300,2,BLACK);
   
-  // Set the tiles coordinates and text, and then draws them
-  int **randomTiles = generateRandomTiles();
-  int k = 0;
+  // Sets the values for the tiles and then draws them
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
-      tiles[k].setValues(xminButton[i], yminButton[j], heightButton, widthButton);
-      tiles[k].setBorderColor(RED);
-      tiles[k].setFillColor(WHITE);
-      //tileText[k].setValues(buttonText[randomTiles[i][j]], xButtonText[i], yButtonText[j], 2, BLACK);
-      tiles[k].draw();
-      tiles[k].fill();
-      //tileText[k].drawText();
-      k++;
+      tiles[4 * j + i].setValues(xminButton[i], yminButton[j], heightButton, widthButton);
+      tiles[4 * j + i].setBorderColor(RED);
+      tiles[4 * j + i].setFillColor(WHITE);
+      tiles[4 * j + i].draw();
+      tiles[4 * j + i].fill();
     }
   }
   
-
+  // Generate a random set of 4 x 4 tiles of numbers 0 - 15.  0 representats a blank tile
+  int **randomTiles = generateRandomTiles();
+  
+  // Set the tiles text and then draws the text
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      tileText[4 * j + i].setValues(buttonText[randomTiles[i][j]], xButtonText[i], yButtonText[j], 1, BLACK);
+      tileText[4 * j + i].drawText();
+    }
+  }
   
   while (!isNewGamePressed()) {
     // Loops until the New Game button is pressed
