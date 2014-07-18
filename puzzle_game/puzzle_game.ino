@@ -98,7 +98,8 @@ void titleScreen()
 void displayGameScreen()
 {
   clearScreen();   
-  
+ 
+  // Draws some of the initial welcome screen 
   Tft.fillRectangle(1,1,237,25,RED);
   Tft.drawString("PUZZLE GAME",30,6,2,YELLOW);
   Tft.fillRectangle(1,26,237,237,WHITE);
@@ -131,6 +132,7 @@ void displayGameScreen()
   while (!isNewGamePressed()) {
     // Loops until the New Game button is pressed
   }
+  
   newGame();
 }
 
