@@ -13,8 +13,9 @@
 #include <TouchScreen.h>  // Library for the Seeed Studio TFT Touch Shield 
 #include <TFT.h>      // Library for the Seeed Studio TFT Touch Shield 
 #include <Password.h> // http://www.arduino.cc/playground/uploads/Code/Password.zip
-#include <TouchScreenGeometry.h>  // Library for drawing shapes for the keypad
-#include <TouchScreenStrings.h> // Library for drawing strings for the keypad
+#include <TouchScreenGeometry.h>  // Library for drawing shapes for the touch screen
+#include <TouchScreenStrings.h> // Library for drawing strings for the touch screen
+#include <TouchScreenButtons.h> // Library for drawing buttons for the touch screen
 
 #ifdef SEEEDUINO
   #define YP A2   // must be an analog pin, use "An" notation!
@@ -59,6 +60,9 @@ const int xButtonText[] = {25, 85, 145, 205}; // x-coordinates for the buttons' 
 const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
 char* buttonText[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"};
 
+Button tiles[16]; 
+TouchScreenString tileText[16];
+
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
@@ -98,29 +102,27 @@ void displayGameScreen()
   Tft.fillRectangle(1,1,237,25,RED);
   Tft.drawString("PUZZLE GAME",30,6,2,YELLOW);
   Tft.fillRectangle(1,26,237,237,WHITE);
-  Tft.drawLine(1,26,237,26,RED);
-  Tft.drawLine(1,85,237,85,RED);
-  Tft.drawLine(1,144,237,144,RED);
-  Tft.drawLine(1,203,237,203,RED);
-  Tft.drawLine(1,262,237,262,RED);
-  Tft.drawLine(1,26,1,262,RED);
-  Tft.drawLine(60,26,60,262,RED);
-  Tft.drawLine(119,26,119,262,RED);
-  Tft.drawLine(178,26,178,262,RED);
-  Tft.drawLine(237,26,237,262,RED);
   Tft.fillRectangle(1,263,237,57,BLUE);
   Tft.fillRectangle(40,295,160,22,CYAN);
   Tft.drawString("NEW GAME",55,300,2,BLACK);
   
-  // Draw the random tiles
+  // Set the tiles coordinates and text, and then draws them
   int **randomTiles = generateRandomTiles();
   int k = 0;
-  for (int j = 0; j < 4; j++) {
-    for (int i = 0; i < 4; i++) {
-      Tft.drawString(buttonText[randomTiles[i][j]], xButtonText[i], yButtonText[j], 2, BLACK);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      tiles[k].setValues(xminButton[i], yminButton[j], heightButton, widthButton);
+      tiles[k].setBorderColor(RED);
+      tiles[k].setFillColor(WHITE);
+      //tileText[k].setValues(buttonText[randomTiles[i][j]], xButtonText[i], yButtonText[j], 2, BLACK);
+      tiles[k].draw();
+      tiles[k].fill();
+      //tileText[k].drawText();
       k++;
     }
   }
+  
+
   
   while (!isNewGamePressed()) {
     // Loops until the New Game button is pressed
