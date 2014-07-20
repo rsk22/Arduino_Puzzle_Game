@@ -58,10 +58,10 @@ const int yminButton[] = {26, 85, 144, 203}; // y-min for buttons
 const int ymaxButton[] = {85, 144, 203, 262}; // y-max for buttons
 const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
 const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
-char* buttonText[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"};
+char buttonText[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '0'};
 
 Button tiles[16]; 
-TouchScreenString tileText[16];
+TouchScreenChar tileText[16];
 
 void setup() 
 {
@@ -141,15 +141,34 @@ void newGame()
   boolean newGameSelected = false; // Used for determining if the user pressed the New Game button
   boolean gameWon = areTilesInOrder(tiles);
   
-   //while (!isNewGamePressed() && !gameWon {
-    // Get the selected tile
-    // int tileNumber = getTileNumber();
+  while (!gameWon and !newGameSelected) {
+    // A point objects holds x, y, and z coordinates
+    Point p = ts.getPoint(); 
+    p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
+    p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
+    // If user presses the screen 
+    if (p.z > ts.pressureThreshhold) { 
+      Serial.println("Screen pressed.");
+      Serial.print("p.x = ");
+      Serial.println(p.x);
+      Serial.print("p.y = ");
+      Serial.println(p.y);
+      // Get the selected tile
+      int tileNumber = getTileNumber(p.x, p.y);
+      if (tileNumber != -1) {
+        Serial.print("Tile # = ");
+        Serial.println(tileNumber);
+      }
+    }
+    // Check to see if the player has selected the New Game button
+    newGameSelected = isNewGamePressed();
     // Check to see if the selected tile can be moved
-    // if (tiles[tileNumber].canMove(tiles) {
+    // if (tiles[tileNumber].canMove(tiles) 
       // tiles[tileNumber].moveTile(tiles);
       // tiles = updateTiles(tileNumber, tiles);
     // playerWins = areTilesInOrder(tiles);
     // newGameSelected = isNewGamePressed();
+  }
 }
 
 
@@ -158,29 +177,6 @@ void clearScreen()
 {
   Tft.fillRectangle(0, 0, 240, 320, BLACK);
 }
-
-
-// Returns the tile number that was pressed
-int getTileNumber() 
-{
-  // A point objects holds x, y, and z coordinates
-  Point p = ts.getPoint(); 
-  p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
-  p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
-  
-  if (p.z > ts.pressureThreshhold) {
-    for(int y = 0; y < noRows; y++) {
-      for(int x = 0; x < noColumns; x++) {
-        if ((p.x > xminButton[x] && p.x < xmaxButton[x]) && (p.y > yminButton[y] && p.y < ymaxButton[y])) 
-          return noColumns * y + x;
-      }
-    }
-  }
- 
- // If the button is not presed, return -1 signifying no button was pressed
- return -1; 
-}
-
 
 // Returns true if the New Game button is pressed; false otherwise
 boolean isNewGamePressed()
@@ -275,6 +271,18 @@ void drawTiles(int **tiles)
   }
 }
 
+// Returns the tile number that was pressed
+int getTileNumber(int xInput, int yInput)
+{
+  for (int i = 0; i < 16; i++) {
+    if ((xInput > tileText[i].getXStart() - 30 && xInput < tileText[i].getXStart() + 30)
+       && (yInput > tileText[i].getYStart() - 30 && yInput < tileText[i].getYStart() + 30)) {
+       int tileNumber = String((tileText[i].getText())).toInt();
+       return tileNumber ; // Returns the tile number
+    }
+  }
+  return -1; // Return -1 if no tile was pressed
+}
 
 
 
