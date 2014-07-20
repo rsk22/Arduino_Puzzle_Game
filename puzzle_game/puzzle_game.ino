@@ -133,22 +133,15 @@ void newGame()
   
   // Generate a random set of tiles
   // Generate a random set of 4 x 4 tiles of numbers 0 - 15.  0 representats a blank tile
-  int **randomTiles = generateRandomTiles();
+  int **tiles = generateRandomTiles();
   
   // Set the tiles text and then draws the text
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
-      tileText[4 * j + i].setValues(buttonText[randomTiles[i][j]], xButtonText[i], yButtonText[j], 1, BLACK);
-      tileText[4 * j + i].drawText();
-    }
-  }
+  drawTiles(tiles);
 
   boolean newGameSelected = false; // Used for determining if the user pressed the New Game button
+  boolean gameWon = areTilesInOrder(tiles);
   
- // boolean playerWins = areTilesInOrder(tiles);
-  // Draw the tiles
-  // drawTiles(tiles);
-  // while (!isNewGamePressed() && !playerWins {
+   //while (!isNewGamePressed() && !gameWon {
     // Get the selected tile
     // int tileNumber = getTileNumber();
     // Check to see if the selected tile can be moved
@@ -257,8 +250,8 @@ void freeTiles(int **tiles)
   delete [] tiles;
 }
 
-// Returns true if the tils are in order; false otherwise
-boolean areTilesInOrder(int tiles[][4])
+// Returns true if the tiles are in order; false otherwise
+boolean areTilesInOrder(int **tiles)
 {
   int j = 0;
   for (int i = 0; i < 4; i++) {
@@ -272,9 +265,14 @@ boolean areTilesInOrder(int tiles[][4])
 }
 
 // Draws the tiles
-void drawTiles(int tiles[][4])
+void drawTiles(int **tiles)
 {
-  //   
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      tileText[4 * j + i].setValues(buttonText[tiles[i][j]], xButtonText[i], yButtonText[j], 1, BLACK);
+      tileText[4 * j + i].drawText();
+    }
+  }
 }
 
 
