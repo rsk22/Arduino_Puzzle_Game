@@ -56,8 +56,8 @@ const int xminButton[] = {1, 60, 119, 178};  // x-min for buttons
 const int xmaxButton[] = {60, 119, 178, 237}; // x-max for buttons
 const int yminButton[] = {26, 85, 144, 203}; // y-min for buttons
 const int ymaxButton[] = {85, 144, 203, 262}; // y-max for buttons
-const int xButtonText[] = {25, 85, 145, 185}; // x-coordinates for the buttons' text
-const int yButtonText[] = {45, 105, 165, 205}; // y-coordinates for the buttons' text
+const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
+const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
 char* buttonText[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"};
 
 Button tiles[16]; 
@@ -117,18 +117,7 @@ void displayGameScreen()
       tiles[4 * j + i].fill();
     }
   }
-  
-  // Generate a random set of 4 x 4 tiles of numbers 0 - 15.  0 representats a blank tile
-  int **randomTiles = generateRandomTiles();
-  
-  // Set the tiles text and then draws the text
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
-      tileText[4 * j + i].setValues(buttonText[randomTiles[i][j]], xButtonText[i], yButtonText[j], 1, BLACK);
-      tileText[4 * j + i].drawText();
-    }
-  }
-  
+    
   while (!isNewGamePressed()) {
     // Loops until the New Game button is pressed
   }
@@ -139,11 +128,23 @@ void displayGameScreen()
 
 void newGame()
 {
-  // Generate a random set of tiles
-  //int tiles[4][4] = generateRandomTiles();
   // Display "START!!!"
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
-  boolean newGameSelected = isNewGamePressed();
+  
+  // Generate a random set of tiles
+  // Generate a random set of 4 x 4 tiles of numbers 0 - 15.  0 representats a blank tile
+  int **randomTiles = generateRandomTiles();
+  
+  // Set the tiles text and then draws the text
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      tileText[4 * j + i].setValues(buttonText[randomTiles[i][j]], xButtonText[i], yButtonText[j], 1, BLACK);
+      tileText[4 * j + i].drawText();
+    }
+  }
+
+  boolean newGameSelected = false; // Used for determining if the user pressed the New Game button
+  
  // boolean playerWins = areTilesInOrder(tiles);
   // Draw the tiles
   // drawTiles(tiles);
