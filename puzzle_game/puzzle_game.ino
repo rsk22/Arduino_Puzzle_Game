@@ -163,7 +163,6 @@ void newGame()
         Serial.println(tilePosNumber); 
       }
 <<<<<<< HEAD
-<<<<<<< HEAD
     }
     if (canTileMove(tilePosNumber)) {
       // Swap the tiles  
@@ -175,8 +174,6 @@ void newGame()
     // Check to see if the player has won
     //gameWon = areTilesInOrder(tiles);
 =======
-=======
->>>>>>> parent of fbe295d... Fixed canTileMove() function
       // Swap the selected tile with the blank thile
     }
     // Check to see if the player has selected the New Game button
@@ -353,7 +350,6 @@ boolean canTileMove(int tileNumber, int **tiles)
 void swapTiles(int tileSelected)
 {
 <<<<<<< HEAD
-<<<<<<< HEAD
   // Get the blank tile's position number
   int blankTilePosNum = getBlankTilePosNumber();
   
@@ -375,10 +371,6 @@ void swapTiles(int tileSelected)
   tileText[positionNumber].setTextColor(BLACK);
   tileText[blankTilePosNum].drawText();
   tileText[positionNumber].drawText();
-=======
-  // Get the selected tile's information
-  
->>>>>>> parent of fbe295d... Fixed canTileMove() function
 =======
   // Get the selected tile's information
   
