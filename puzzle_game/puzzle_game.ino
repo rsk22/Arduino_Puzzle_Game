@@ -161,21 +161,19 @@ void newGame()
       if (tilePosNumber != -1) {
         Serial.print("Tile Position Number = ");
         Serial.println(tilePosNumber); 
-        }
       }
-    // Swap the tiles  
-    swapTiles(tilePosNumber);  
-    // Check to see if the player has selected the New Game button
-    newGameSelected = isNewGamePressed();
     }
-
-    // Check to see if the selected tile can be moved
-      // swapTiles(tilePosNumber);
-      // tiles = updateTiles(tileNumber, tiles);
-    // playerWins = areTilesInOrder(tiles);
-    // newGameSelected = isNewGamePressed();
+    if (canTileMove(tilePosNumber)) {
+      // Swap the tiles  
+      swapTiles(tilePosNumber);
+      // Update the tiles  
+    }
+    // Check to see if the player has selected the New Game button
+    //newGameSelected = isNewGamePressed();
+    // Check to see if the player has won
+    //gameWon = areTilesInOrder(tiles);
     delay(100);
-  }
+ }
 }
 
 
@@ -339,6 +337,26 @@ boolean canTileMove(int tilePosNumber)
 void swapTiles(int positionNumber)
 {
   // Get the blank tile's position number
+  int blankTilePosNum = getBlankTilePosNumber();
+  
+  // Update the blank tile's text
+  char* tempText = tileText[positionNumber].getText();
+  tileText[blankTilePosNum].setText(tempText);
+ 
+  // Update the selected tile's text to "0"
+  tileText[positionNumber].setText("0");
+  
+  // Erase the tiles' text
+  tileText[blankTilePosNum].setTextColor(WHITE);
+  tileText[positionNumber].setTextColor(WHITE);
+  tileText[blankTilePosNum].drawText();
+  tileText[positionNumber].drawText();
+  
+  // Draw the tile's new text
+  tileText[blankTilePosNum].setTextColor(BLACK);
+  tileText[positionNumber].setTextColor(BLACK);
+  tileText[blankTilePosNum].drawText();
+  tileText[positionNumber].drawText();
 }
 
 // Get the blank tile's position number
