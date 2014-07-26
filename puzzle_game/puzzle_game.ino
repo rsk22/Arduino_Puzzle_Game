@@ -163,7 +163,8 @@ void newGame()
         Serial.println(tilePosNumber); 
       }
     }
-    if (canTileMove(tilePosNumber)) {
+    if (canTileMove(tilePosNumber) and tilePosNumber != -1) {
+      Serial.println("Tile can move!");
       // Swap the tiles  
       swapTiles(tilePosNumber);
       // Update the tiles  
@@ -304,6 +305,10 @@ int getTilePosNumber(int xInput, int yInput)
 
 boolean canTileMove(int tilePosNumber)
 {  
+  // If tile number is zero return false
+  if (tilePosNumber == getBlankTilePosNumber())
+    return false;
+  
   // legalTileShifts[][] is used to determine if the tile can move.  -1 indicates it cannot move
   int legalTileShifts[16][4] = {
                                {1, 4, -1, -1}, // Tile #0
@@ -333,6 +338,16 @@ boolean canTileMove(int tilePosNumber)
   return false; // Else return false                         
 }
 
+// Get the blank tile's position number
+int getBlankTilePosNumber()
+{
+  for (int i = 0; i < 16; i++) {
+    int tileNumber = String((tileText[i].getText())).toInt(); 
+    if (tileNumber == 0)
+      return i;
+  }
+}
+
 // Swaps the specified tile with the blank tile
 void swapTiles(int positionNumber)
 {
@@ -357,16 +372,6 @@ void swapTiles(int positionNumber)
   tileText[positionNumber].setTextColor(BLACK);
   tileText[blankTilePosNum].drawText();
   tileText[positionNumber].drawText();
-}
-
-// Get the blank tile's position number
-int getBlankTilePosNumber()
-{
-  for (int i = 0; i < 16; i++) {
-    int tileNumber = String((tileText[i].getText())).toInt(); 
-    if (tileNumber == 0)
-      return i;
-  }
 }
 
 
