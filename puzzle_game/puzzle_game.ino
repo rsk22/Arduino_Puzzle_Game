@@ -58,10 +58,10 @@ const int yminButton[] = {26, 85, 144, 203}; // y-min for buttons
 const int ymaxButton[] = {85, 144, 203, 262}; // y-max for buttons
 const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
 const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
-char buttonText[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '0'};
+char* buttonText[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"};
 
 Button tiles[16]; 
-TouchScreenChar tileText[16];
+TouchScreenString tileText[16];
 
 void setup() 
 {
@@ -146,28 +146,35 @@ void newGame()
     Point p = ts.getPoint(); 
     p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
     p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
+    int tileNumber = -1; // Resets tile number for each loop
+    int tilePosNumber = -1; // Resets the tile' position number for each loop
     // If user presses the screen 
     if (p.z > ts.pressureThreshhold) { 
-      Serial.println("Screen pressed.");
-      Serial.print("p.x = ");
-      Serial.println(p.x);
-      Serial.print("p.y = ");
-      Serial.println(p.y);
       // Get the selected tile
-      int tileNumber = getTileNumber(p.x, p.y);
+      tileNumber = getTileNumber(p.x, p.y);
+      // Get the selected tile's position number
       if (tileNumber != -1) {
         Serial.print("Tile # = ");
         Serial.println(tileNumber);
       }
+      tilePosNumber = getTilePosNumber(p.x, p.y);
+      if (tilePosNumber != -1) {
+        Serial.print("Tile Position Number = ");
+        Serial.println(tilePosNumber); 
+      }
+      // Swap the selected tile with the blank thile
     }
     // Check to see if the player has selected the New Game button
-    newGameSelected = isNewGamePressed();
+    //newGameSelected = isNewGamePressed();
     // Check to see if the selected tile can be moved
-    // if (tiles[tileNumber].canMove(tiles) 
+    if (canTileMove(tileNumber, tiles)) {
+      Serial.println("Tile can move");
+    }
       // tiles[tileNumber].moveTile(tiles);
       // tiles = updateTiles(tileNumber, tiles);
     // playerWins = areTilesInOrder(tiles);
     // newGameSelected = isNewGamePressed();
+    delay(100);
   }
 }
 
@@ -282,6 +289,55 @@ int getTileNumber(int xInput, int yInput)
     }
   }
   return -1; // Return -1 if no tile was pressed
+}
+
+// rReturns the tile's position number
+int getTilePosNumber(int xInput, int yInput)
+{
+  for (int i = 0; i < 16; i++) {
+    if ((xInput > tileText[i].getXStart() - 30 && xInput < tileText[i].getXStart() + 30)
+       && (yInput > tileText[i].getYStart() - 30 && yInput < tileText[i].getYStart() + 30)) {
+         int posNumber = i;
+         return i;
+       }
+  }
+  return -1; // Return -1 if no tile was pressed
+}
+
+boolean canTileMove(int tileNumber, int **tiles)
+{  
+  // legalTileShifts[][] is used to determine if the tile can move
+  int legalTileShifts[16][4] = {
+                               {1, 4, -1, -1}, // Tile #0
+                               {0, 2, 6, -1}, // Tile #1
+                               {1, 3, 7, -1}, // Tile #2
+                               {2, 7, -1, -1}, // Tile #3
+                               {0, 5, 8, -1}, // Tile #4
+                               {1, 4, 6, 9}, // Tile #5
+                               {2, 5, 7, 10}, // Tile #6
+                               {3, 6, 11, -1}, // Tile #7
+                               {4, 9, 12, -1}, // Tile #8
+                               {5, 8, 10, 13}, // Tile #9
+                               {6, 9, 11, 14}, // Tile #10
+                               {7, 10, 15, -1}, // Tile #11
+                               {8, 13, -1, -1}, // Tile #12
+                               {9, 12, 14, -1}, // Tile #13
+                               {10, 13, 15, -1}, // Tile #14
+                               {11, 14, -1, -1}, // Tile #15
+                               };
+  
+  // Using legalTileShifts, determine if the tile can move.  One of the adjacent tiles must contain zero (blank tile).
+  for (int i = 0; i < 4; i++) {
+    if (tiles[legalTileShifts[tileNumber][i]] == 0)
+      return true;  // Return true if the adjacent tile is zero  
+  }
+  return false; // Else return false                         
+}
+
+void swapTiles(int tileSelected)
+{
+  // Get the selected tile's information
+  
 }
 
 
