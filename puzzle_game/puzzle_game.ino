@@ -162,6 +162,7 @@ void newGame()
         Serial.print("Tile Position Number = ");
         Serial.println(tilePosNumber); 
       }
+<<<<<<< HEAD
     }
     if (canTileMove(tilePosNumber)) {
       // Swap the tiles  
@@ -172,6 +173,20 @@ void newGame()
     //newGameSelected = isNewGamePressed();
     // Check to see if the player has won
     //gameWon = areTilesInOrder(tiles);
+=======
+      // Swap the selected tile with the blank thile
+    }
+    // Check to see if the player has selected the New Game button
+    //newGameSelected = isNewGamePressed();
+    // Check to see if the selected tile can be moved
+    if (canTileMove(tileNumber, tiles)) {
+      Serial.println("Tile can move");
+    }
+      // tiles[tileNumber].moveTile(tiles);
+      // tiles = updateTiles(tileNumber, tiles);
+    // playerWins = areTilesInOrder(tiles);
+    // newGameSelected = isNewGamePressed();
+>>>>>>> parent of fbe295d... Fixed canTileMove() function
     delay(100);
  }
 }
@@ -289,7 +304,7 @@ int getTileNumber(int xInput, int yInput)
   return -1; // Return -1 if no tile was pressed
 }
 
-// Returns the tile's position number
+// rReturns the tile's position number
 int getTilePosNumber(int xInput, int yInput)
 {
   for (int i = 0; i < 16; i++) {
@@ -302,9 +317,9 @@ int getTilePosNumber(int xInput, int yInput)
   return -1; // Return -1 if no tile was pressed
 }
 
-boolean canTileMove(int tilePosNumber)
+boolean canTileMove(int tileNumber, int **tiles)
 {  
-  // legalTileShifts[][] is used to determine if the tile can move.  -1 indicates it cannot move
+  // legalTileShifts[][] is used to determine if the tile can move
   int legalTileShifts[16][4] = {
                                {1, 4, -1, -1}, // Tile #0
                                {0, 2, 6, -1}, // Tile #1
@@ -326,16 +341,15 @@ boolean canTileMove(int tilePosNumber)
   
   // Using legalTileShifts, determine if the tile can move.  One of the adjacent tiles must contain zero (blank tile).
   for (int i = 0; i < 4; i++) {
-    int tileNumber = String(tileText[legalTileShifts[tilePosNumber][i]].getText()).toInt();
-    if (tileNumber == 0 && legalTileShifts[tilePosNumber][i] != -1)
+    if (tiles[legalTileShifts[tileNumber][i]] == 0)
       return true;  // Return true if the adjacent tile is zero  
   }
   return false; // Else return false                         
 }
 
-// Swaps the specified tile with the blank tile
-void swapTiles(int positionNumber)
+void swapTiles(int tileSelected)
 {
+<<<<<<< HEAD
   // Get the blank tile's position number
   int blankTilePosNum = getBlankTilePosNumber();
   
@@ -357,16 +371,11 @@ void swapTiles(int positionNumber)
   tileText[positionNumber].setTextColor(BLACK);
   tileText[blankTilePosNum].drawText();
   tileText[positionNumber].drawText();
+=======
+  // Get the selected tile's information
+  
+>>>>>>> parent of fbe295d... Fixed canTileMove() function
 }
 
-// Get the blank tile's position number
-int getBlankTilePosNumber()
-{
-  for (int i = 0; i < 16; i++) {
-    int tileNumber = String((tileText[i].getText())).toInt(); 
-    if (tileNumber == 0)
-      return i;
-  }
-}
 
 
