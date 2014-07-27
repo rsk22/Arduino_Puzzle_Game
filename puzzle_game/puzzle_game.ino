@@ -12,7 +12,6 @@
 #include <stdint.h>  
 #include <TouchScreen.h>  // Library for the Seeed Studio TFT Touch Shield 
 #include <TFT.h>      // Library for the Seeed Studio TFT Touch Shield 
-#include <Password.h> // http://www.arduino.cc/playground/uploads/Code/Password.zip
 #include <TouchScreenGeometry.h>  // Library for drawing shapes for the touch screen
 #include <TouchScreenStrings.h> // Library for drawing strings for the touch screen
 #include <TouchScreenButtons.h> // Library for drawing buttons for the touch screen
@@ -167,12 +166,13 @@ void newGame()
       Serial.println("Tile can move!");
       // Swap the tiles  
       swapTiles(tilePosNumber);
-      // Update the tiles  
+      // Update the tiles
+      **tiles = updateTiles();  
     }
     // Check to see if the player has selected the New Game button
-    //newGameSelected = isNewGamePressed();
+    newGameSelected = isNewGamePressed();
     // Check to see if the player has won
-    //gameWon = areTilesInOrder(tiles);
+    gameWon = areTilesInOrder(tiles);
     delay(100);
  }
 }
@@ -252,6 +252,26 @@ void freeTiles(int **tiles)
   delete [] tiles;
 }
 
+// Updates the tiles 
+int **updateTiles()
+{
+  // Generate a 4 x 4 array that represents the tiles
+  int **tiles = new int*[4];  
+  for (int i = 0; i < 4; i++) {
+    tiles[i] = new int[4];    
+  }
+  
+  // Update the tiles
+  int k = 0;
+  for (int i = 0; i < 4; i++) {
+   for (int j = 0; j < 4; j++) {
+    tiles[i][j] = String(tileText[k]).toInt());
+    k++
+   }
+  }
+  return tiles;
+}
+
 // Returns true if the tiles are in order; false otherwise
 boolean areTilesInOrder(int **tiles)
 {
@@ -303,6 +323,7 @@ int getTilePosNumber(int xInput, int yInput)
   return -1; // Return -1 if no tile was pressed
 }
 
+// Returns true if the tile can move; false otherwise
 boolean canTileMove(int tilePosNumber)
 {  
   // If tile number is zero return false
@@ -362,10 +383,8 @@ void swapTiles(int positionNumber)
   tileText[positionNumber].setText("0");
   
   // Erase the tiles' text
-  tileText[blankTilePosNum].setTextColor(WHITE);
-  tileText[positionNumber].setTextColor(WHITE);
-  tileText[blankTilePosNum].drawText();
-  tileText[positionNumber].drawText();
+  tiles[positionNumber].fill();
+  tiles[blankTilePosNum].fill();
   
   // Draw the tile's new text
   tileText[blankTilePosNum].setTextColor(BLACK);
