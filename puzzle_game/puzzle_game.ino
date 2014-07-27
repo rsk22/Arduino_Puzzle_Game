@@ -164,6 +164,7 @@ void newGame()
     }
     if (canTileMove(tilePosNumber) and tilePosNumber != -1) {
       Serial.println("Tile can move!");
+      delay(100);
       // Swap the tiles  
       swapTiles(tilePosNumber);
       // Update the tiles
