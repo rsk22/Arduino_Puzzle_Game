@@ -167,7 +167,7 @@ void newGame()
       // Swap the tiles  
       swapTiles(tilePosNumber);
       // Update the tiles
-      **tiles = updateTiles();  
+      int **tiles = updateTiles();  
     }
     // Check to see if the player has selected the New Game button
     newGameSelected = isNewGamePressed();
@@ -193,13 +193,16 @@ boolean isNewGamePressed()
   p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
   
   if (p.z > ts.pressureThreshhold) {
-    Tft.drawString("NEW GAME",55,300,2,RED);
-    delay(100);
-    Tft.drawString("NEW GAME",55,300,2,BLACK);
-    return ((p.x > 40 && p.x < 200) && (p.y > 295 && p.y < 317));
-  } else {
-    return false;
+    if ((p.x > 40 && p.x < 200) && (p.y > 295 && p.y < 317)) {
+      Tft.drawString("NEW GAME",55,300,2,RED);
+      delay(100);
+      Tft.drawString("NEW GAME",55,300,2,BLACK);
+      return true;
+    } else {
+      return false;
+    }
   }
+  return false;
 }
 
 // Returns true if the screen is pressed; false otherwise
@@ -265,8 +268,8 @@ int **updateTiles()
   int k = 0;
   for (int i = 0; i < 4; i++) {
    for (int j = 0; j < 4; j++) {
-    tiles[i][j] = String(tileText[k]).toInt());
-    k++
+    tiles[i][j] = String(tileText[k].getText()).toInt();
+    k++;
    }
   }
   return tiles;
