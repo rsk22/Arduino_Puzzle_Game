@@ -57,7 +57,7 @@ const int yminButton[] = {26, 85, 144, 203}; // y-min for buttons
 const int ymaxButton[] = {85, 144, 203, 262}; // y-max for buttons
 const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
 const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
-char* buttonText[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"};
+char* buttonText[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"};
 
 Button tiles[16]; 
 TouchScreenString tileText[16];
@@ -65,7 +65,7 @@ TouchScreenString tileText[16];
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
-  Serial.begin(9600);
+  Serial.begin(9600);     // Used for debugging
   titleScreen();
 }
 
@@ -133,14 +133,14 @@ void newGame()
   // Generate a random set of tiles
   // Generate a random set of 4 x 4 tiles of numbers 0 - 15.  0 representats a blank tile
   int **tiles = generateRandomTiles();
-  
+
   // Set the tiles text and then draws the text
   drawTiles(tiles);
-
-  boolean newGameSelected = false; // Used for determining if the user pressed the New Game button
-  boolean gameWon = areTilesInOrder(tiles);
+  tiles = updateTiles();        
   
-  while (!gameWon and !newGameSelected) {
+  // Loop until game has been won or player selects new game
+  boolean gameWon = false;
+  while (!gameWon) {
     // A point objects holds x, y, and z coordinates
     Point p = ts.getPoint(); 
     p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
@@ -152,26 +152,40 @@ void newGame()
       // Get the selected tile
       tileNumber = getTileNumber(p.x, p.y);
       // Get the selected tile's position number
-      if (tileNumber != -1) {
-        Serial.print("Tile # = ");
-        Serial.println(tileNumber);
-      }
       tilePosNumber = getTilePosNumber(p.x, p.y);
-      if (tilePosNumber != -1) {
-        Serial.print("Tile Position Number = ");
-        Serial.println(tilePosNumber); 
+      // Debug
+      Serial.print("Tile Position Number: ");
+      Serial.println(tilePosNumber);
+      // Debug
+      Serial.print("Tiles before: ");
+      for (int i = 0; i < 4; i++) {
+        Serial.println("");
+        for (int j = 0; j < 4; j++) {
+          Serial.print(tiles[i][j]);
+          Serial.print(" ");
+        }
       }
+      Serial.println("");
     }
-    if (canTileMove(tilePosNumber) and tilePosNumber != -1) {
-      Serial.println("Tile can move!");
-      delay(100);
+    if (canTileMove(tilePosNumber) && tilePosNumber != -1) {
       // Swap the tiles  
       swapTiles(tilePosNumber);
       // Update the tiles
-      int **tiles = updateTiles();  
+      tiles = updateTiles();        
+      // Debug
+      Serial.print("Tiles after: ");
+      for (int i = 0; i < 4; i++) {
+        Serial.println("");
+        for (int j = 0; j < 4; j++) {
+          Serial.print(tiles[i][j]);
+          Serial.print(" ");
+        }
+      }
+      Serial.println("");
     }
     // Check to see if the player has selected the New Game button
-    newGameSelected = isNewGamePressed();
+    if (isNewGamePressed()) 
+      displayGameScreen();
     // Check to see if the player has won
     gameWon = areTilesInOrder(tiles);
     delay(100);
@@ -211,9 +225,6 @@ boolean isScreenPressed()
 {
   // A point objects holds x, y, and z coordinates
   Point p = ts.getPoint(); 
-  p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
-  p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
-  
   return (p.z > ts.pressureThreshhold);
 }
 
@@ -279,12 +290,12 @@ int **updateTiles()
 // Returns true if the tiles are in order; false otherwise
 boolean areTilesInOrder(int **tiles)
 {
-  int j = 0;
+  int k = 0;
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
-      if (tiles[i][j] != j)
+      if (tiles[i][j] != k)
         return false;
-      j++;
+      k++;
     }
   }
   return true;
@@ -378,6 +389,12 @@ void swapTiles(int positionNumber)
 {
   // Get the blank tile's position number
   int blankTilePosNum = getBlankTilePosNumber();
+      
+  // Erase the tiles' text
+  tileText[blankTilePosNum].setTextColor(WHITE);
+  tileText[positionNumber].setTextColor(WHITE);
+  tileText[blankTilePosNum].drawText();
+  tileText[positionNumber].drawText();
   
   // Update the blank tile's text
   char* tempText = tileText[positionNumber].getText();
@@ -385,11 +402,7 @@ void swapTiles(int positionNumber)
  
   // Update the selected tile's text to "0"
   tileText[positionNumber].setText("0");
-  
-  // Erase the tiles' text
-  tiles[positionNumber].fill();
-  tiles[blankTilePosNum].fill();
-  
+
   // Draw the tile's new text
   tileText[blankTilePosNum].setTextColor(BLACK);
   tileText[positionNumber].setTextColor(BLACK);
