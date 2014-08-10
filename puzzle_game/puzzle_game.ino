@@ -57,7 +57,7 @@ const int yminButton[] = {26, 85, 144, 203}; // y-min for buttons
 const int ymaxButton[] = {85, 144, 203, 262}; // y-max for buttons
 const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
 const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
-char* buttonText[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"};
+char* buttonText[16] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"};; 
 
 Button tiles[16]; 
 TouchScreenString tileText[16];
@@ -96,8 +96,9 @@ void titleScreen()
 // Displays the Puzzle Game screen
 void displayGameScreen()
 {
+  // Clear the screen 
   clearScreen();   
- 
+  
   // Draws some of the initial welcome screen 
   Tft.fillRectangle(1,1,237,25,RED);
   Tft.drawString("PUZZLE GAME",30,6,2,YELLOW);
@@ -171,7 +172,7 @@ void newGame()
       // Swap the tiles  
       swapTiles(tilePosNumber);
       // Update the tiles
-      tiles = updateTiles();        
+      //tiles = updateTiles();        
       // Debug
       Serial.print("Tiles after: ");
       for (int i = 0; i < 4; i++) {
@@ -184,8 +185,9 @@ void newGame()
       Serial.println("");
     }
     // Check to see if the player has selected the New Game button
-    if (isNewGamePressed()) 
+    if (isNewGamePressed()) {
       displayGameScreen();
+    }
     // Check to see if the player has won
     gameWon = areTilesInOrder(tiles);
     delay(100);
@@ -259,6 +261,7 @@ int **generateRandomTiles()
   return tiles;
 }
 
+// Deletes the tiles from memory
 void freeTiles(int **tiles)
 {
   for (int i = 0; i < 16; i++) {
@@ -348,8 +351,8 @@ boolean canTileMove(int tilePosNumber)
   // legalTileShifts[][] is used to determine if the tile can move.  -1 indicates it cannot move
   int legalTileShifts[16][4] = {
                                {1, 4, -1, -1}, // Tile #0
-                               {0, 2, 6, -1}, // Tile #1
-                               {1, 3, 7, -1}, // Tile #2
+                               {0, 2, 5, -1}, // Tile #1
+                               {1, 3, 6, -1}, // Tile #2
                                {2, 7, -1, -1}, // Tile #3
                                {0, 5, 8, -1}, // Tile #4
                                {1, 4, 6, 9}, // Tile #5
