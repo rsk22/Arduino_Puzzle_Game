@@ -157,6 +157,9 @@ void newGame()
       // Debug
       Serial.print("Tile Position Number: ");
       Serial.println(tilePosNumber);
+      // Debug 
+      Serial.print("Tile Number: ");
+      Serial.println(tileNumber);
       // Debug
       Serial.print("Tiles before: ");
       for (int i = 0; i < 4; i++) {
@@ -172,7 +175,7 @@ void newGame()
       // Swap the tiles  
       swapTiles(tilePosNumber);
       // Update the tiles
-      //tiles = updateTiles();        
+      tiles = updateTiles();        
       // Debug
       Serial.print("Tiles after: ");
       for (int i = 0; i < 4; i++) {
@@ -346,7 +349,7 @@ boolean canTileMove(int tilePosNumber)
 {  
   // If tile number is zero return false
   if (tilePosNumber == getBlankTilePosNumber())
-    return false;
+    return false;  
   
   // legalTileShifts[][] is used to determine if the tile can move.  -1 indicates it cannot move
   int legalTileShifts[16][4] = {
