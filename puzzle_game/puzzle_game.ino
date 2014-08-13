@@ -130,7 +130,7 @@ void displayGameScreen()
 void newGame()
 {
   // Reset the tile text for each game
-  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"}; 
+  char* buttonText[16] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}; 
 
   // Display "START!!!"
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
@@ -158,9 +158,7 @@ void newGame()
     }
     if (canTileMove(tilePosNumber) && tilePosNumber != -1) {
       // Swap the tiles  
-      swap(&buttonText[getBlankTilePosNumber()], &buttonText[tilePosNumber]);  
-      // Draw the tiles
-      drawTiles(buttonText);   
+      swapTiles(tilePosNumber);      
     }
     // Check to see if the player has selected the New Game button
     if (isNewGamePressed()) 
@@ -232,17 +230,12 @@ void shuffleTiles(char** tiles, int n)
 boolean areTilesInOrder(char** tiles)
 {
   // Go through each tile and determine if it is in order
-  for (int i = 1; i < 16; i++) {
+  for (int i = 0; i < 16; i++) {
     int temp = String(tiles[i]).toInt();
     if (temp != i)
         return false;
   }
-  // Make sure last tile is blank
-  int temp = String(tiles[15]).toInt();
-  if (temp == 0)
-    return true;
-  else 
-    return false;
+  return true;
 }
 
 // Draws the tiles
@@ -251,15 +244,10 @@ void drawTiles(char** tiles)
   int k = 0;
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
-      int temp = String(tiles[k]).toInt();
-      if (temp != 0) {
-        tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
-        tileText[k].drawText();
-      }
-      else {
-        tileText[k].setValues("", xButtonText[i], yButtonText[j], 1, BLACK);
-        tileText[k].drawText();
-      }
+      tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
+      tileText[k].drawText();
+      tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
+      tileText[k].drawText();
       k++;
     }
   }
@@ -337,6 +325,32 @@ int getBlankTilePosNumber()
   }
 }
 
-
+// Swaps the specified tile with the blank tile
+void swapTiles(int positionNumber)
+{
+  // Determine blank tile's position number
+  const int blankTilePosNum = getBlankTilePosNumber();
+  
+  // Erase both of the tiles
+  tileText[positionNumber].setTextColor(WHITE);
+  tileText[blankTilePosNum].setTextColor(WHITE);
+  tileText[positionNumber].drawText();
+  tileText[blankTilePosNum].drawText();
+  
+  // Set both tile's text color back to black
+  tileText[positionNumber].setTextColor(BLACK);
+  tileText[blankTilePosNum].setTextColor(BLACK);
+  
+  // Get the text from the selected
+  char *tempText = tileText[positionNumber].getText();
+  
+  // Set the blank tile to swap tile's text and draw it
+  tileText[blankTilePosNum].setText(tempText);
+  tileText[blankTilePosNum].drawText();
+  
+  // Update the swap tile's text and draw it
+  tileText[positionNumber].setText("0");
+  tileText[positionNumber].drawText();
+}
 
 
