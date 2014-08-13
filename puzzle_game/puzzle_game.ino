@@ -60,12 +60,12 @@ const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons'
 
 // Global instances
 Button tiles[16]; 
-Button newGameButton("NEW GAME", 40, 295, 160, 22, BLACK, CYAN, BLACK);
 TouchScreenString tileText[16];
 
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
+  Serial.begin(9600);     // Used for debugging
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
 }
@@ -105,14 +105,8 @@ void displayGameScreen()
   Tft.drawString("PUZZLE GAME",30,6,2,YELLOW);
   Tft.fillRectangle(1,26,237,237,WHITE);
   Tft.fillRectangle(1,263,237,57,BLUE);
-  
-  // Set the values for the New Game button and draw it
-  newGameButton.setValues(40, 295, 160, 22);
-  newGameButton.setBorderColor(BLACK);
-  newGameButton.setFillColor(CYAN);
-  newGameButton.setTextValues("NEW GAME", 55, 300, 2, BLACK);
-  newGameButton.draw();
-  newGameButton.fill();
+  Tft.fillRectangle(40,295,160,22,CYAN);
+  Tft.drawString("NEW GAME",55,300,2,BLACK);
   
   // Sets the values for the tiles and then draws them
   for (int i = 0; i < 4; i++) {
@@ -124,12 +118,11 @@ void displayGameScreen()
       tiles[4 * j + i].fill();
     }
   }
-  
+    
   while (!isNewGamePressed()) {
-    // Loop until the New Game button is pressed
+    // Loops until the New Game button is pressed
   }
   
-  newGameButton.buttonDisplay();
   newGame();
 }
 
@@ -147,7 +140,7 @@ void newGame()
   drawTiles(buttonText);
   
   // Loop until game has been won or player selects new game
-  boolean gameWon = areTilesInOrder(buttonText);
+  boolean gameWon = false;
   while (!gameWon) {
     // A point objects holds x, y, and z coordinates
     Point p = ts.getPoint(); 
@@ -163,11 +156,12 @@ void newGame()
       // Get the selected tile's position number
       tilePosNumber = getTilePosNumber(p.x, p.y);
     }
-    // If selected tile can move, swap the tiles
-    if (canTileMove(tilePosNumber) && tilePosNumber != -1) 
+    if (canTileMove(tilePosNumber) && tilePosNumber != -1) {
+      // Swap the tiles  
       swapTiles(tilePosNumber);      
+    }
     // Check to see if the player has selected the New Game button
-    if (newGameButton.isPressed(p.x, p.y)) 
+    if (isNewGamePressed()) 
       displayGameScreen();
     // Draw the tiles
     drawTiles(buttonText);
@@ -175,15 +169,34 @@ void newGame()
     gameWon = areTilesInOrder(buttonText);
     delay(100);
   }
-  // If game has been won, tell player congrats!
-  if (gameWon) 
-    playerWins();
 }
+
 
 // Clears the entire screen
 void clearScreen()
 {
   Tft.fillRectangle(0, 0, 240, 320, BLACK);
+}
+
+// Returns true if the New Game button is pressed; false otherwise
+boolean isNewGamePressed()
+{
+  // A point objects holds x, y, and z coordinates
+  Point p = ts.getPoint(); 
+  p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
+  p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
+  
+  if (p.z > ts.pressureThreshhold) {
+    if ((p.x > 40 && p.x < 200) && (p.y > 295 && p.y < 317)) {
+      Tft.drawString("NEW GAME",55,300,2,RED);
+      delay(100);
+      Tft.drawString("NEW GAME",55,300,2,BLACK);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return false;
 }
 
 // Returns true if the screen is pressed; false otherwise
@@ -236,6 +249,7 @@ boolean areTilesInOrder(char** tiles)
 void drawTiles(char** tiles)
 {
   int k = 0;
+<<<<<<< HEAD
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
       int temp = String(tiles[k]).toInt();
@@ -246,6 +260,12 @@ void drawTiles(char** tiles)
         tileText[k].setValues("", xButtonText[i], yButtonText[j], 1, BLACK);
         tileText[k].drawText();
       }
+=======
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
+      tileText[k].drawText();
+>>>>>>> parent of 9f58430... Initial working version
       k++;
     }
   }
@@ -323,24 +343,6 @@ int getBlankTilePosNumber()
   }
 }
 
-// Returns true if the New Game button is pressed; false otherwise
-boolean isNewGamePressed()
-{
-  // A point objects holds x, y, and z coordinates
-  Point p = ts.getPoint(); 
-  p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
-  p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
-  
-  if (p.z > ts.pressureThreshhold) {
-    if ((p.x > 40 && p.x < 200) && (p.y > 295 && p.y < 317)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  return false;
-}
-
 // Swaps the specified tile with the blank tile
 void swapTiles(int positionNumber)
 {
@@ -367,15 +369,6 @@ void swapTiles(int positionNumber)
   // Update the swap tile's text and draw it
   tileText[positionNumber].setText("0");
   tileText[positionNumber].drawText();
-}
-
-// Displays "YOU WIN!!!" 
-void playerWins()
-{
-  Tft.drawString("START!!!", 55, 270, 2, BLUE); 
-  Tft.drawString("YOU WIN!", 55, 270, 2, WHITE);
-  delay(3000);
-  displayGameScreen();
 }
 
 
