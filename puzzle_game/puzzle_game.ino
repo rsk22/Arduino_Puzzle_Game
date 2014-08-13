@@ -250,6 +250,7 @@ void drawTiles(char** tiles)
 {
   int k = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
       int temp = String(tiles[k]).toInt();
@@ -261,6 +262,8 @@ void drawTiles(char** tiles)
         tileText[k].drawText();
       }
 =======
+=======
+>>>>>>> parent of 9f58430... Initial working version
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
