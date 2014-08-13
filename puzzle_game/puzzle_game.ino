@@ -137,7 +137,7 @@ void displayGameScreen()
 void newGame()
 {
   // Reset the tile text for each game
-  char* buttonText[16] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}; 
+  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"}; 
 
   // Display "START!!!"
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
@@ -169,6 +169,8 @@ void newGame()
     // Check to see if the player has selected the New Game button
     if (newGameButton.isPressed(p.x, p.y)) 
       displayGameScreen();
+    // Draw the tiles
+    drawTiles(buttonText);
     // Check to see if the player has won
     gameWon = areTilesInOrder(buttonText);
     delay(100);
@@ -217,12 +219,17 @@ void shuffleTiles(char** tiles, int n)
 boolean areTilesInOrder(char** tiles)
 {
   // Go through each tile and determine if it is in order
-  for (int i = 0; i < 16; i++) {
+  for (int i = 1; i < 15; i++) {
     int temp = String(tiles[i]).toInt();
     if (temp != i)
         return false;
   }
-  return true;
+  // Check last tile to make sure it is blank
+  int temp = String(tiles[15]).toInt();
+  if (temp == 0) 
+    return true;
+  else
+    return false;
 }
 
 // Draws the tiles
@@ -231,8 +238,14 @@ void drawTiles(char** tiles)
   int k = 0;
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
-      tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
-      tileText[k].drawText();
+      int temp = String(tiles[k]).toInt();
+      if (temp != 0) {
+        tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
+        tileText[k].drawText();
+      } else {
+        tileText[k].setValues("", xButtonText[i], yButtonText[j], 1, BLACK);
+        tileText[k].drawText();
+      }
       k++;
     }
   }
