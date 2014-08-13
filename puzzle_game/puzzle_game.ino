@@ -130,7 +130,7 @@ void displayGameScreen()
 void newGame()
 {
   // Reset the tile text for each game
-  char* buttonText[16] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}; 
+  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"}; 
 
   // Display "START!!!"
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
@@ -158,7 +158,7 @@ void newGame()
     }
     if (canTileMove(tilePosNumber) && tilePosNumber != -1) {
       // Swap the tiles  
-      swapTiles(tilePosNumber);      
+      swapTiles(tilePosNumber);
     }
     // Check to see if the player has selected the New Game button
     if (isNewGamePressed()) 
@@ -167,6 +167,11 @@ void newGame()
     gameWon = areTilesInOrder(buttonText);
     delay(100);
   }
+  // Check to see if the game was won.  If so, print "YOU WIN!"
+  if (gameWon) 
+    playerWins();
+  // Restart the game
+  displayGameScreen();
 }
 
 
@@ -230,24 +235,38 @@ void shuffleTiles(char** tiles, int n)
 boolean areTilesInOrder(char** tiles)
 {
   // Go through each tile and determine if it is in order
-  for (int i = 0; i < 16; i++) {
+  for (int i = 0; i < 15; i++) {
     int temp = String(tiles[i]).toInt();
-    if (temp != i)
+    Serial.println("Tile: ");
+    Serial.println(temp);
+    if (temp != i + 1)
         return false;
   }
-  return true;
+  // Make sure last tile is blank
+  int temp = String(tiles[15]).toInt();
+  Serial.println("Tile: ");
+  Serial.println(temp);
+  if (temp == 0)
+    return true;
+  else 
+    return false;
 }
 
 // Draws the tiles
 void drawTiles(char** tiles)
 {
   int k = 0;
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
-      tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
-      tileText[k].drawText();
-      tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
-      tileText[k].drawText();
+  for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < 4; i++) {
+      int temp = String(tiles[k]).toInt();
+      if (temp != 0) {
+        tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
+        tileText[k].drawText();
+      }
+      else {
+        tileText[k].setValues("", xButtonText[i], yButtonText[j], 1, BLACK);
+        tileText[k].drawText();
+      }
       k++;
     }
   }
@@ -349,8 +368,16 @@ void swapTiles(int positionNumber)
   tileText[blankTilePosNum].drawText();
   
   // Update the swap tile's text and draw it
-  tileText[positionNumber].setText("0");
+  tileText[positionNumber].setText("");
   tileText[positionNumber].drawText();
+}
+
+// Displays "YOU WIN!!!" 
+void playerWins()
+{
+  Tft.drawString("START!!!", 55, 270, 2, BLUE); 
+  Tft.drawString("YOU WIN!", 55, 270, 2, WHITE);
+  delay(3000);
 }
 
 
