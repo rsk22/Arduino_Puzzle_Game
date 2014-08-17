@@ -45,3 +45,5 @@ puzzle_game/puzzle_game.ino
 *.h
 *.cppproj
 *.hex
+*.atsln
+*.atsuo

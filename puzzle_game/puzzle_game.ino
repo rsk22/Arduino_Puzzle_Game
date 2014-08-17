@@ -65,6 +65,7 @@ TouchScreenString tileText[16];
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
+  Serial.begin(9600);
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
 }
@@ -129,17 +130,17 @@ void displayGameScreen()
 void newGame()
 {
   // Reset the tile text for each game
-  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"}; 
+  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "0", "13", "14", "15", "12"}; 
 
   // Display "START!!!"
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
   
   // Shuffle the tiles and then draw them
-  shuffleTiles(buttonText);
+  //shuffleTiles(buttonText);
   drawTiles(buttonText);
   
   // Loop until game has been won or player selects new game
-  boolean gameWon = areTilesInOrder(buttonText);
+  boolean gameWon = areTilesInOrder();
   while (!gameWon) {
     // A point objects holds x, y, and z coordinates
     Point p = ts.getPoint(); 
@@ -158,7 +159,7 @@ void newGame()
     if (isNewGamePressed()) 
       displayGameScreen();
     // Check to see if the player has won
-    gameWon = areTilesInOrder(buttonText);
+    gameWon = areTilesInOrder();
     delay(100);
   }
   // Check to see if the game was won.  If so, print "YOU WIN!"
@@ -226,16 +227,16 @@ void shuffleTiles(char** tiles)
 
 
 // Returns true if the tiles are in order; false otherwise
-boolean areTilesInOrder(char** tiles)
+boolean areTilesInOrder()
 {
   // Go through each tile and determine if it is in order
   for (int i = 0; i < 15; i++) {
-    int temp = String(tiles[i]).toInt();
+    int temp = String(tileText[i].getText()).toInt();
     if (temp != i + 1)
         return false;
   }
   // Make sure last tile is blank
-  int temp = String(tiles[15]).toInt();
+  int temp = String(tileText[15].getText()).toInt();
   if (temp == 0)
     return true;
   else 
@@ -245,16 +246,17 @@ boolean areTilesInOrder(char** tiles)
 // Draws the tiles
 void drawTiles(char** buttonText)
 {
+  const int fontSize = 2;
   int k = 0;
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
+  for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < 4; i++) {
       int temp = String(buttonText[k]).toInt();
       if (temp != 0) {
-        tileText[k].setValues(buttonText[k], xButtonText[i], yButtonText[j], 1, BLACK);
+        tileText[k].setValues(buttonText[k], xButtonText[i], yButtonText[j], fontSize, BLACK);
         tileText[k].drawText();
       }
       else {
-        tileText[k].setValues("", xButtonText[i], yButtonText[j], 1, BLACK);
+        tileText[k].setValues("", xButtonText[i], yButtonText[j], fontSize, BLACK);
         tileText[k].drawText();
       }
       k++;
@@ -283,13 +285,6 @@ boolean canTileMove(int tilePosNumber)
     return false;  
   
   // legalTileShifts[][] is used to determine if the tile can move.  -1 indicates it cannot move
-  /*
-  Tiles are:
-  [0][1][2][3]
-  [4][5][6][7]
-  [8][9][10][11]
-  [12][13][14][15]
-  */
   int legalTileShifts[16][4] = {
                                {1, 4, -1, -1}, // Tile #0
                                {0, 2, 5, -1}, // Tile #1
