@@ -148,10 +148,9 @@ void newGame()
     // Resets tile position number for each loop
     int tilePosNumber = -1; 
     // If user presses the screen 
-    if (p.z > ts.pressureThreshhold) { 
+    if (p.z > ts.pressureThreshhold) 
       // Get the selected tile's position number
       tilePosNumber = getTilePosNumber(p.x, p.y);
-    }
 	// If the tile can move, swap the tiles
     if (canTileMove(tilePosNumber) && tilePosNumber != -1)  
       swapTiles(tilePosNumber);
