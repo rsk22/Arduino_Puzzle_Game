@@ -3,6 +3,15 @@
   Original Author: Garry Spencer
   Modified by: Richard Kirkpatrick
   Player must arrange all the blocks in the correct order to win the game.
+  Order of tiles must be:
+  
+  1 2 3 4
+  5 6 7 8
+  9 10 11 12
+  13 14 15 "blank"
+  
+  Original game idea came from an article from "Nuts and Volts", May 2014 by Garry Paul Spencer.
+  Game concept was modified to be more readable and make use of my personal libraries. 
   
   Future Upgrades:
     - Abstract out functions to library
@@ -65,7 +74,6 @@ TouchScreenString tileText[16];
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
-  Serial.begin(9600);
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
 }
@@ -136,7 +144,7 @@ void newGame()
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
   
   // Shuffle the tiles and then draw them
-  //shuffleTiles(buttonText);
+  shuffleTiles(buttonText);
   drawTiles(buttonText);
   
   // Loop until game has been won or player selects new game
@@ -246,7 +254,7 @@ boolean areTilesInOrder()
 // Draws the tiles
 void drawTiles(char** buttonText)
 {
-  const int fontSize = 2;
+  const int fontSize = 1;
   int k = 0;
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
