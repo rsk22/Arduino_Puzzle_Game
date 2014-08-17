@@ -36,3 +36,11 @@ Icon
 .Trashes
 
 puzzle_game/puzzle_game.ino
+*.o
+*.d
+*.a
+*.eep
+*.elf
+*.xml
+*.h
+*.cppproj

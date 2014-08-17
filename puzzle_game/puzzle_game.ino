@@ -135,7 +135,7 @@ void newGame()
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
   
   // Shuffle the tiles and then draw them
-  shuffleTiles(buttonText, 16);
+  shuffleTiles(buttonText);
   drawTiles(buttonText);
   
   // Loop until game has been won or player selects new game
@@ -218,10 +218,10 @@ void swap(char **a, char **b)
 }
 
 // Shuffles the tiles
-void shuffleTiles(char** tiles, int n)
+void shuffleTiles(char** tiles)
 {
   // Start from the last element and swap one by one.  
-  for (int i = n - 1; i > 0; i--) {
+  for (int i = numButtons - 1; i > 0; i--) {
     // Pick a random index from 0 to i
     int j = random() % (i+1);
     // Swap the elements
@@ -248,14 +248,14 @@ boolean areTilesInOrder(char** tiles)
 }
 
 // Draws the tiles
-void drawTiles(char** tiles)
+void drawTiles(char** buttonText)
 {
   int k = 0;
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
-      int temp = String(tiles[k]).toInt();
+      int temp = String(buttonText[k]).toInt();
       if (temp != 0) {
-        tileText[k].setValues(tiles[k], xButtonText[i], yButtonText[j], 1, BLACK);
+        tileText[k].setValues(buttonText[k], xButtonText[i], yButtonText[j], 1, BLACK);
         tileText[k].drawText();
       }
       else {
