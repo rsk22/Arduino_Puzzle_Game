@@ -139,19 +139,16 @@ void newGame()
   drawTiles(buttonText);
   
   // Loop until game has been won or player selects new game
-  boolean gameWon = false;
+  boolean gameWon = areTilesInOrder(buttonText);
   while (!gameWon) {
     // A point objects holds x, y, and z coordinates
     Point p = ts.getPoint(); 
     p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
     p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
-    // Resets tile number and tile position number for each loop
-    int tileNumber = -1; 
+    // Resets tile position number for each loop
     int tilePosNumber = -1; 
     // If user presses the screen 
     if (p.z > ts.pressureThreshhold) { 
-      // Get the selected tile
-      tileNumber = getTileNumber(p.x, p.y);
       // Get the selected tile's position number
       tilePosNumber = getTilePosNumber(p.x, p.y);
     }
@@ -251,8 +248,8 @@ boolean areTilesInOrder(char** tiles)
 void drawTiles(char** buttonText)
 {
   int k = 0;
-  for (int j = 0; j < 4; j++) {
-    for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
       int temp = String(buttonText[k]).toInt();
       if (temp != 0) {
         tileText[k].setValues(buttonText[k], xButtonText[i], yButtonText[j], 1, BLACK);
@@ -265,19 +262,6 @@ void drawTiles(char** buttonText)
       k++;
     }
   }
-}
-
-// Returns the tile number that was pressed
-int getTileNumber(int xInput, int yInput)
-{
-  for (int i = 0; i < 16; i++) {
-    if ((xInput > tileText[i].getXStart() - 30 && xInput < tileText[i].getXStart() + 30)
-       && (yInput > tileText[i].getYStart() - 30 && yInput < tileText[i].getYStart() + 30)) {
-       int tileNumber = String((tileText[i].getText())).toInt();
-       return tileNumber ; // Returns the tile number
-    }
-  }
-  return -1; // Return -1 if no tile was pressed
 }
 
 // Returns the tile's position number

@@ -44,3 +44,4 @@ puzzle_game/puzzle_game.ino
 *.xml
 *.h
 *.cppproj
+*.hex
