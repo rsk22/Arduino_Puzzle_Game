@@ -152,10 +152,9 @@ void newGame()
       // Get the selected tile's position number
       tilePosNumber = getTilePosNumber(p.x, p.y);
     }
-    if (canTileMove(tilePosNumber) && tilePosNumber != -1) {
-      // Swap the tiles  
+	// If the tile can move, swap the tiles
+    if (canTileMove(tilePosNumber) && tilePosNumber != -1)  
       swapTiles(tilePosNumber);
-    }
     // Check to see if the player has selected the New Game button
     if (isNewGamePressed()) 
       displayGameScreen();
