@@ -65,7 +65,6 @@ TouchScreenString tileText[16];
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
-  Serial.begin(9600);     // Used for debugging
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
 }
@@ -108,7 +107,7 @@ void displayGameScreen()
   Tft.fillRectangle(40,295,160,22,CYAN);
   Tft.drawString("NEW GAME",55,300,2,BLACK);
   
-  // Sets the values for the tiles and then draws them
+  // Sets the values for the tiles and then draw them
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       tiles[4 * j + i].setValues(xminButton[i], yminButton[j], heightButton, widthButton);
@@ -126,7 +125,7 @@ void displayGameScreen()
   newGame();
 }
 
-
+// Starts the main Puzzle Game
 void newGame()
 {
   // Reset the tile text for each game
@@ -225,7 +224,7 @@ void shuffleTiles(char** tiles, int n)
   for (int i = n - 1; i > 0; i--) {
     // Pick a random index from 0 to i
     int j = random() % (i+1);
-    // Swaw the elements
+    // Swap the elements
     swap(&tiles[i], &tiles[j]);
   }
 }
@@ -237,15 +236,11 @@ boolean areTilesInOrder(char** tiles)
   // Go through each tile and determine if it is in order
   for (int i = 0; i < 15; i++) {
     int temp = String(tiles[i]).toInt();
-    Serial.println("Tile: ");
-    Serial.println(temp);
     if (temp != i + 1)
         return false;
   }
   // Make sure last tile is blank
   int temp = String(tiles[15]).toInt();
-  Serial.println("Tile: ");
-  Serial.println(temp);
   if (temp == 0)
     return true;
   else 
