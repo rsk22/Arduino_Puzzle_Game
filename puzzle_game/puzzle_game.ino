@@ -268,8 +268,8 @@ void drawTiles(char** buttonText)
 int getTilePosNumber(int xInput, int yInput)
 {
   for (int i = 0; i < 16; i++) {
-    if ((xInput > tileText[i].getXStart() - 30 && xInput < tileText[i].getXStart() + 30)
-       && (yInput > tileText[i].getYStart() - 30 && yInput < tileText[i].getYStart() + 30)) {
+    if ((xInput > tileText[i].getXStart() - widthButton && xInput < tileText[i].getXStart() + widthButton)
+       && (yInput > tileText[i].getYStart() - heightButton && yInput < tileText[i].getYStart() + heightButton)) {
          int posNumber = i;
          return i;
        }
