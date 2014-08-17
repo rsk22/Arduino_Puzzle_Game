@@ -204,7 +204,7 @@ boolean isScreenPressed()
   return (p.z > ts.pressureThreshhold);
 }
 
-// Utility function to swap char*
+// Utility function to swap the tiles
 void swap(char **a, char **b)
 {
   char* temp = *a;
@@ -283,6 +283,13 @@ boolean canTileMove(int tilePosNumber)
     return false;  
   
   // legalTileShifts[][] is used to determine if the tile can move.  -1 indicates it cannot move
+  /*
+  Tiles are:
+  [0][1][2][3]
+  [4][5][6][7]
+  [8][9][10][11]
+  [12][13][14][15]
+  */
   int legalTileShifts[16][4] = {
                                {1, 4, -1, -1}, // Tile #0
                                {0, 2, 5, -1}, // Tile #1
