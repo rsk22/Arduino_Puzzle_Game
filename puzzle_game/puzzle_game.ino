@@ -24,6 +24,8 @@
 #include <TouchScreenGeometry.h>  // Library for drawing shapes for the touch screen
 #include <TouchScreenStrings.h> // Library for drawing strings for the touch screen
 #include <TouchScreenButtons.h> // Library for drawing buttons for the touch screen
+#include <StandardCplusplus.h>
+#include <PuzzleSolver.h>
 
 #ifdef SEEEDUINO
   #define YP A2   // must be an analog pin, use "An" notation!
@@ -69,6 +71,7 @@ const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons'
 
 // Global instances
 Button tiles[16]; 
+Button hintButton;
 TouchScreenString tileText[16];
 
 void setup() 
@@ -114,6 +117,7 @@ void displayGameScreen()
   Tft.fillRectangle(1,26,237,237,WHITE);
   Tft.fillRectangle(1,263,237,57,BLUE);
   Tft.fillRectangle(40,295,160,22,CYAN);
+  Tft.drawRectangle(39,294,162,24,BLACK);
   Tft.drawString("NEW GAME",55,300,2,BLACK);
   
   // Sets the values for the tiles and then draw them
@@ -126,6 +130,14 @@ void displayGameScreen()
       tiles[4 * j + i].fill();
     }
   }
+  
+  // Draw the hint button
+  hintButton.setValues(10, 270, 20, 20);
+  hintButton.setTextValues("?", 18, 275, 1, BLACK);
+  hintButton.setBorderColor(BLACK);
+  hintButton.setFillColor(CYAN);
+  hintButton.draw();
+  hintButton.fill();
     
   while (!isNewGamePressed()) {
     // Loops until the New Game button is pressed
