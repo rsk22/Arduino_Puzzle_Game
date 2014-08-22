@@ -79,6 +79,7 @@ void setup()
   Tft.init();             // Initializes the TFT library
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
+  Serial.begin(9600);
 }
 
 void loop() 
@@ -178,6 +179,11 @@ void newGame()
     // Check to see if the player has selected the New Game button
     if (isNewGamePressed()) 
       displayGameScreen();
+	// Check to see if the player has selected the hint button
+	if (hintButton.isPressed(p.x, p.y)) {
+		printSolveForPuzzle();
+		// Do something
+	}
     // Check to see if the player has won
     gameWon = areTilesInOrder();
     delay(100);
@@ -336,47 +342,64 @@ boolean canTileMove(int tilePosNumber)
 // Get the blank tile's position number
 int getBlankTilePosNumber()
 {
-  for (int i = 0; i < 16; i++) {
-    int tileNumber = String((tileText[i].getText())).toInt(); 
-    if (tileNumber == 0)
-      return i;
-  }
+	for (int i = 0; i < 16; i++) {
+		int tileNumber = String((tileText[i].getText())).toInt(); 
+		if (tileNumber == 0)
+			return i;
+	}
 }
 
 // Swaps the specified tile with the blank tile
 void swapTiles(int positionNumber)
 {
-  // Determine blank tile's position number
-  const int blankTilePosNum = getBlankTilePosNumber();
+	// Determine blank tile's position number
+	const int blankTilePosNum = getBlankTilePosNumber();
   
-  // Erase both of the tiles
-  tileText[positionNumber].setTextColor(WHITE);
-  tileText[blankTilePosNum].setTextColor(WHITE);
-  tileText[positionNumber].drawText();
-  tileText[blankTilePosNum].drawText();
+	// Erase both of the tiles
+	tileText[positionNumber].setTextColor(WHITE);
+	tileText[blankTilePosNum].setTextColor(WHITE);
+	tileText[positionNumber].drawText();
+	tileText[blankTilePosNum].drawText();
   
-  // Set both tile's text color back to black
-  tileText[positionNumber].setTextColor(BLACK);
-  tileText[blankTilePosNum].setTextColor(BLACK);
+	// Set both tile's text color back to black
+	tileText[positionNumber].setTextColor(BLACK);
+	tileText[blankTilePosNum].setTextColor(BLACK);
   
-  // Get the text from the selected
-  char *tempText = tileText[positionNumber].getText();
+	// Get the text from the selected
+	char *tempText = tileText[positionNumber].getText();
   
-  // Set the blank tile to swap tile's text and draw it
-  tileText[blankTilePosNum].setText(tempText);
-  tileText[blankTilePosNum].drawText();
+	// Set the blank tile to swap tile's text and draw it
+	tileText[blankTilePosNum].setText(tempText);
+	tileText[blankTilePosNum].drawText();
   
-  // Update the swap tile's text and draw it
-  tileText[positionNumber].setText("");
-  tileText[positionNumber].drawText();
+	// Update the swap tile's text and draw it
+	tileText[positionNumber].setText("");
+	tileText[positionNumber].drawText();
 }
 
 // Displays "YOU WIN!!!" 
 void playerWins()
 {
-  Tft.drawString("START!!!", 55, 270, 2, BLUE); 
-  Tft.drawString("YOU WIN!", 55, 270, 2, WHITE);
-  delay(3000);
+	Tft.drawString("START!!!", 55, 270, 2, BLUE);
+	Tft.drawString("YOU WIN!", 55, 270, 2, WHITE);
+	delay(3000);
 }
 
+// Determines if the player wants to have the computer solve the puzzle for them
+void printSolveForPuzzle()
+{
+	// Print the "Solve Puzzle?" text 
+	Tft.fillRectangle(1,263,237,57,BLUE); 
+	Tft.drawString("SOLVE PUZZLE?", 65, 295, 1, WHITE);
+	
+	// Draw the yes button
+	Tft.drawRectangle(50, 270, 50, 20, BLACK);
+	Tft.fillRectangle(51, 271, 49, 19, CYAN);
+	Tft.drawString("YES", 63, 278, 1, BLACK);
+	
+	// Draw the no button
+	Tft.drawRectangle(130, 270, 50, 20, BLACK);
+	Tft.fillRectangle(131, 271, 49, 19, CYAN);
+	Tft.drawString("NO", 147, 278, 1, BLACK);
+}
 
