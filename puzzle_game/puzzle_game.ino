@@ -24,8 +24,8 @@
 #include <TouchScreenGeometry.h>  // Library for drawing shapes for the touch screen
 #include <TouchScreenStrings.h> // Library for drawing strings for the touch screen
 #include <TouchScreenButtons.h> // Library for drawing buttons for the touch screen
-#include <StandardCplusplus.h>
-#include <PuzzleSolver.h>
+#include <StandardCplusplus.h> // Arduino library that is very similar to the Standard C++ library
+#include <PuzzleSolver.h> // Library for solving the Puzzle game
 
 #ifdef SEEEDUINO
   #define YP A2   // must be an analog pin, use "An" notation!
@@ -72,14 +72,16 @@ const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons'
 // Global instances
 Button tiles[16]; 
 Button hintButton;
+Button *yesButton = new Button(50, 270, 50, 20);
+Button *noButton = new Button(130, 270, 50, 20);
 TouchScreenString tileText[16];
+
 
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
-  Serial.begin(9600);
 }
 
 void loop() 
@@ -90,68 +92,78 @@ void loop()
 // Displays the title screen
 void titleScreen()
 {  
-  Tft.drawString("SLIDING PUZZLE GAME",4,10,1,YELLOW);
-  Tft.drawString("by GARRY SPENCER",23,35,1,WHITE);
-  Tft.drawString("& RICHARD KIRKPATRICK", 23, 50, 1, WHITE);
-  Tft.drawString("ARRANGE ALL OF THE",11,80,1,CYAN);
-  Tft.drawString("BLOCKS IN CORRECT",17,100,1,CYAN);
-  Tft.drawString("NUMERICAL ORDER",27,120,1,CYAN);
-  Tft.drawString("TOUCH THE SCREEN",20,160,1,CYAN);
-  Tft.drawString("TO BEGIN PLAYING",20,180,1,CYAN);
-  Tft.drawString("THE PUZZLE GAME",25,200,1,CYAN);
+	Tft.drawString("SLIDING PUZZLE GAME",4,10,1,YELLOW);
+	Tft.drawString("by GARRY SPENCER",23,35,1,WHITE);
+	Tft.drawString("& RICHARD KIRKPATRICK", 23, 50, 1, WHITE);
+	Tft.drawString("ARRANGE ALL OF THE",11,80,1,CYAN);
+	Tft.drawString("BLOCKS IN CORRECT",17,100,1,CYAN);
+	Tft.drawString("NUMERICAL ORDER",27,120,1,CYAN);
+	Tft.drawString("TOUCH THE SCREEN",20,160,1,CYAN);
+	Tft.drawString("TO BEGIN PLAYING",20,180,1,CYAN);
+	Tft.drawString("THE PUZZLE GAME",25,200,1,CYAN);
 
-  while (!isScreenPressed()) {
-    // Loops until the screen is pressed
-  }
-  displayGameScreen();
+	while (!isScreenPressed()) {
+	    // Loops until the screen is pressed
+	}
+	
+	displayGameScreen();
 }
 
 // Displays the Puzzle Game screen
 void displayGameScreen()
 {
-  // Clear the screen 
-  clearScreen();   
+	// Clear the screen 
+	clearScreen();   
   
-  // Draws some of the initial welcome screen 
-  Tft.fillRectangle(1,1,237,25,RED);
-  Tft.drawString("PUZZLE GAME",30,6,2,YELLOW);
-  Tft.fillRectangle(1,26,237,237,WHITE);
-  Tft.fillRectangle(1,263,237,57,BLUE);
-  Tft.fillRectangle(40,295,160,22,CYAN);
-  Tft.drawRectangle(39,294,162,24,BLACK);
-  Tft.drawString("NEW GAME",55,300,2,BLACK);
-  
-  // Sets the values for the tiles and then draw them
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
-      tiles[4 * j + i].setValues(xminButton[i], yminButton[j], heightButton, widthButton);
-      tiles[4 * j + i].setBorderColor(RED);
-      tiles[4 * j + i].setFillColor(WHITE);
-      tiles[4 * j + i].draw();
-      tiles[4 * j + i].fill();
-    }
-  }
-  
-  // Draw the hint button
-  hintButton.setValues(10, 270, 20, 20);
-  hintButton.setTextValues("?", 18, 275, 1, BLACK);
-  hintButton.setBorderColor(BLACK);
-  hintButton.setFillColor(CYAN);
-  hintButton.draw();
-  hintButton.fill();
+	// Draws some of the initial welcome screen 
+	Tft.fillRectangle(1,1,237,25,RED);
+	Tft.drawString("PUZZLE GAME",30,6,2,YELLOW);
+	Tft.fillRectangle(1,26,237,237,WHITE);
+	Tft.fillRectangle(1,263,237,57,BLUE);
+	Tft.fillRectangle(40,295,160,22,CYAN);
+	Tft.drawRectangle(39,294,162,24,BLACK);
+	Tft.drawString("NEW GAME",55,300,2,BLACK);
+
+	// Sets the values for the tiles and then draw them
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			tiles[4 * j + i].setValues(xminButton[i], yminButton[j], heightButton, widthButton);
+			tiles[4 * j + i].setBorderColor(RED);
+			tiles[4 * j + i].setFillColor(WHITE);
+			tiles[4 * j + i].draw();
+			tiles[4 * j + i].fill();
+		}
+	}
+	
+	// Draw the hint button
+	hintButton.setValues(10, 270, 20, 20);
+	hintButton.setTextValues("?", 18, 275, 1, BLACK);
+	hintButton.setBorderColor(BLACK);
+	hintButton.setFillColor(CYAN);
+	hintButton.draw();
+	hintButton.fill();
+
+	// Set the values for the yes and no buttons
+	yesButton->setBorderColor(BLACK);
+	yesButton->setFillColor(CYAN);
+	yesButton->setTextValues("YES", 63, 278, 1, BLACK);
+		
+	noButton->setBorderColor(BLACK);
+	noButton->setFillColor(CYAN);
+	noButton->setTextValues("NO", 147, 278, 1, BLACK);
     
-  while (!isNewGamePressed()) {
-    // Loops until the New Game button is pressed
-  }
+	while (!isNewGamePressed()) {
+		// Loops until the New Game button is pressed
+	}
   
-  newGame();
+	newGame();
 }
 
 // Starts the main Puzzle Game
 void newGame()
 {
   // Reset the tile text for each game
-  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "0", "13", "14", "15", "12"}; 
+  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"}; 
 
   // Display "START!!!"
   Tft.drawString("START!!!", 55, 270, 2, WHITE);
@@ -170,23 +182,30 @@ void newGame()
     // Resets tile position number for each loop
     int tilePosNumber = -1; 
     // If user presses the screen 
-    if (p.z > ts.pressureThreshhold) 
-      // Get the selected tile's position number
-      tilePosNumber = getTilePosNumber(p.x, p.y);
+    if (p.z > ts.pressureThreshhold) {
+		// Check to see if the player has selected the hint button
+		if (hintButton.isPressed(p.x, p.y)) {
+			hintButton.buttonDisplay();
+			printSolveForPuzzle();
+			if (playerWantsToSolvePuzzle()) {
+				// Solve the puzzle
+			} else {
+				// Erase the buttons
+				displayGameScreen();
+			}
+		}
+		// Get the selected tile's position number
+		tilePosNumber = getTilePosNumber(p.x, p.y);
+	}
 	// If the tile can move, swap the tiles
     if (canTileMove(tilePosNumber) && tilePosNumber != -1)  
       swapTiles(tilePosNumber);
     // Check to see if the player has selected the New Game button
     if (isNewGamePressed()) 
       displayGameScreen();
-	// Check to see if the player has selected the hint button
-	if (hintButton.isPressed(p.x, p.y)) {
-		printSolveForPuzzle();
-		// Do something
-	}
     // Check to see if the player has won
     gameWon = areTilesInOrder();
-    delay(100);
+    delay(10);
   }
   // Check to see if the game was won.  If so, print "YOU WIN!"
   if (gameWon) 
@@ -392,14 +411,56 @@ void printSolveForPuzzle()
 	Tft.fillRectangle(1,263,237,57,BLUE); 
 	Tft.drawString("SOLVE PUZZLE?", 65, 295, 1, WHITE);
 	
-	// Draw the yes button
-	Tft.drawRectangle(50, 270, 50, 20, BLACK);
-	Tft.fillRectangle(51, 271, 49, 19, CYAN);
-	Tft.drawString("YES", 63, 278, 1, BLACK);
-	
-	// Draw the no button
-	Tft.drawRectangle(130, 270, 50, 20, BLACK);
-	Tft.fillRectangle(131, 271, 49, 19, CYAN);
-	Tft.drawString("NO", 147, 278, 1, BLACK);
+	// Draw yes and no buttons
+	yesButton->draw();
+	yesButton->fill();
+	noButton->draw();
+	noButton->fill();
 }
+
+
+// Returns true if the yes button is pressed; false if the no button is pressed
+boolean playerWantsToSolvePuzzle()
+{
+	// Loop for 10 seconds. Return false if the user does not select a button by the end of 10 seconds.
+	int time = 0;
+	while (time < 10000) {
+        	// A point objects holds x, y, and z coordinates
+        	Point p = ts.getPoint();
+        	p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
+        	p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
+		if (p.z > ts.pressureThreshhold) {
+			if (yesButton->isPressed(p.x, p.y)) {
+				yesButton->buttonDisplay();
+				return true;
+			}
+			if (noButton->isPressed(p.x, p.y)) {
+				noButton->buttonDisplay();
+				return false;
+			}
+		}
+		time += 10;
+		delay(10);
+	}
+	return false;
+}
+
+
+// Prints the Puzzle to the serial port
+/*
+void printPuzzle(Puzzle myPuzzle)
+{
+	char** text = myPuzzle.getTileText();
+	for (int i = 0; i < 15; i++) {
+		if (i % 4 == 0) {
+			Serial.println(text[i]);
+			Serial.print("  ");
+			} else {
+			Serial.print(text[i]);
+			Serial.print("  ");
+		}
+
+	}
+}
+*/
 
