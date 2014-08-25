@@ -30,7 +30,7 @@ You will need the following hardware to run the game:
 the code (upgrade in near future).
 2. Arduino microcontroller compatabile with Seeed Studio TFT Touch Screen (Arduino Uno or Arduino Mega)
   
-  Future Upgrades:
-    - Abstract out functions to library
-    - Add an automatic puzzle solver
+Future Upgrades:
+  - Abstract out functions to library
+  - Add an automatic puzzle solver
 
