@@ -11,8 +11,11 @@ Puzzle Game for the Arduino and Seeed Studio TFT Touch Screen
   Order of tiles must be:
   
   1 2 3 4
+  
   5 6 7 8
+  
   9 10 11 12
+  
   13 14 15 "blank"
   
   Original game idea came from an article from "Nuts and Volts", May 2014 by Garry Paul Spencer.
