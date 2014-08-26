@@ -24,7 +24,7 @@
 #include <TouchScreenGeometry.h>  // Library for drawing shapes for the touch screen
 #include <TouchScreenStrings.h> // Library for drawing strings for the touch screen
 #include <TouchScreenButtons.h> // Library for drawing buttons for the touch screen
-#include <StandardCplusplus.h> // Arduino library that is very similar to the Standard C++ library
+#include <StandardCplusplus.h> // Standard C++ library for Arduino
 #include <PuzzleSolver.h> // Library for solving the Puzzle game
 
 #ifdef SEEEDUINO
@@ -54,26 +54,12 @@
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
-// Pre-processor constants
-#define heightButton 59
-#define widthButton 59
-#define noColumns 4
-#define noRows 4
-#define numButtons 16
-
-// Global constants
-const int xminButton[] = {1, 60, 119, 178};  // x-min for buttons
-const int xmaxButton[] = {60, 119, 178, 237}; // x-max for buttons
-const int yminButton[] = {26, 85, 144, 203}; // y-min for buttons
-const int ymaxButton[] = {85, 144, 203, 262}; // y-max for buttons
-const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
-const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
-
 // Global instances
 Button tiles[16]; 
-Button hintButton;
-Button *yesButton = new Button(50, 270, 50, 20);
-Button *noButton = new Button(130, 270, 50, 20);
+Button newGameButton(39,294,162,24,BLACK, CYAN);
+Button hintButton(10, 270, 20, 20, BLACK, CYAN);
+Button yesButton(50, 270, 50, 20, BLACK, CYAN);
+Button noButton(130, 270, 50, 20, BLACK, CYAN);
 TouchScreenString tileText[16];
 
 
@@ -120,14 +106,21 @@ void displayGameScreen()
 	Tft.drawString("PUZZLE GAME",30,6,2,YELLOW);
 	Tft.fillRectangle(1,26,237,237,WHITE);
 	Tft.fillRectangle(1,263,237,57,BLUE);
-	Tft.fillRectangle(40,295,160,22,CYAN);
-	Tft.drawRectangle(39,294,162,24,BLACK);
-	Tft.drawString("NEW GAME",55,300,2,BLACK);
 
+	// Parameters for the tiles
+	const int xminTiles[] = {1, 60, 119, 178};  // x-min for buttons
+	const int xmaxTiles[] = {60, 119, 178, 237}; // x-max for buttons
+	const int yminTiles[] = {26, 85, 144, 203}; // y-min for buttons
+	const int ymaxTiles[] = {85, 144, 203, 262}; // y-max for buttons
+	const int xTilesText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
+	const int yTilesText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
+	const int heightTiles = 59; // Height of the button
+	const int widthTiles = 59; // Width of the button
+		
 	// Sets the values for the tiles and then draw them
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			tiles[4 * j + i].setValues(xminButton[i], yminButton[j], heightButton, widthButton);
+			tiles[4 * j + i].setValues(xminTiles[i], yminTiles[j], heightTiles, widthTiles);
 			tiles[4 * j + i].setBorderColor(RED);
 			tiles[4 * j + i].setFillColor(WHITE);
 			tiles[4 * j + i].draw();
@@ -136,24 +129,22 @@ void displayGameScreen()
 	}
 	
 	// Draw the hint button
-	hintButton.setValues(10, 270, 20, 20);
 	hintButton.setTextValues("?", 18, 275, 1, BLACK);
-	hintButton.setBorderColor(BLACK);
-	hintButton.setFillColor(CYAN);
 	hintButton.draw();
 	hintButton.fill();
+	
+	// Set the text for the New Game button and draw it
+	newGameButton.setTextValues("NEW GAME",55,300,2,BLACK);
+	newGameButton.draw();
+	newGameButton.fill();
 
-	// Set the values for the yes and no buttons
-	yesButton->setBorderColor(BLACK);
-	yesButton->setFillColor(CYAN);
-	yesButton->setTextValues("YES", 63, 278, 1, BLACK);
-		
-	noButton->setBorderColor(BLACK);
-	noButton->setFillColor(CYAN);
-	noButton->setTextValues("NO", 147, 278, 1, BLACK);
+	// Set the text values for the yes and no buttons
+	yesButton.setTextValues("YES", 63, 278, 1, BLACK);
+	noButton.setTextValues("NO", 147, 278, 1, BLACK);
     
+	// Loops until the New Game button is pressed
 	while (!isNewGamePressed()) {
-		// Loops until the New Game button is pressed
+		// Loops until the new game button is pressed	
 	}
   
 	newGame();
@@ -162,56 +153,56 @@ void displayGameScreen()
 // Starts the main Puzzle Game
 void newGame()
 {
-  // Reset the tile text for each game
-  char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"}; 
+	// Reset the tile text for each game
+	char* buttonText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "0", "15"}; 
 
-  // Display "START!!!"
-  Tft.drawString("START!!!", 55, 270, 2, WHITE);
+	// Display "START!!!"
+	Tft.drawString("START!!!", 55, 270, 2, WHITE);
   
-  // Shuffle the tiles and then draw them
-  shuffleTiles(buttonText);
-  drawTiles(buttonText);
+	// Shuffle the tiles and then draw them
+	shuffleTiles(buttonText);
+	drawTiles(buttonText);
   
-  // Loop until game has been won or player selects new game
-  boolean gameWon = areTilesInOrder();
-  while (!gameWon) {
-    // A point objects holds x, y, and z coordinates
-    Point p = ts.getPoint(); 
-    p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
-    p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
-    // Resets tile position number for each loop
-    int tilePosNumber = -1; 
-    // If user presses the screen 
-    if (p.z > ts.pressureThreshhold) {
-		// Check to see if the player has selected the hint button
-		if (hintButton.isPressed(p.x, p.y)) {
-			hintButton.buttonDisplay();
-			printSolveForPuzzle();
-			if (playerWantsToSolvePuzzle()) {
-				// Solve the puzzle
-			} else {
-				// Erase the buttons
-				displayGameScreen();
+	// Loop until game has been won or player selects new game
+	boolean gameWon = areTilesInOrder();
+	while (!gameWon) {
+		// A point objects holds x, y, and z coordinates
+		Point p = ts.getPoint(); 
+		p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
+		p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
+		// Resets tile position number for each loop
+		int tilePosNumber = -1; 
+		// If user presses the screen 
+		if (p.z > ts.pressureThreshhold) {
+			// Check to see if the player has selected the hint button
+			if (hintButton.isPressed(p.x, p.y)) {
+				hintButton.buttonDisplay();
+				printSolveForPuzzle();
+				if (playerWantsToSolvePuzzle()) {
+					// Solve the puzzle
+				} else {
+					// Erase the yes and no buttons
+					eraseYesAndNoButtons();
+				}
 			}
-		}
 		// Get the selected tile's position number
 		tilePosNumber = getTilePosNumber(p.x, p.y);
+		}
+		// If the tile can move, swap the tiles
+		if (canTileMove(tilePosNumber) && tilePosNumber != -1)  
+			swapTiles(tilePosNumber);
+		// Check to see if the player has selected the New Game button
+		if (isNewGamePressed()) 
+			displayGameScreen();
+		// Check to see if the player has won
+		gameWon = areTilesInOrder();
+		delay(10);
 	}
-	// If the tile can move, swap the tiles
-    if (canTileMove(tilePosNumber) && tilePosNumber != -1)  
-      swapTiles(tilePosNumber);
-    // Check to see if the player has selected the New Game button
-    if (isNewGamePressed()) 
-      displayGameScreen();
-    // Check to see if the player has won
-    gameWon = areTilesInOrder();
-    delay(10);
-  }
-  // Check to see if the game was won.  If so, print "YOU WIN!"
-  if (gameWon) 
-    playerWins();
-  // Restart the game
-  displayGameScreen();
+	// Check to see if the game was won.  If so, print "YOU WIN!"
+	if (gameWon) 
+		playerWins();
+	// Restart the game
+	displayGameScreen();
 }
 
 
@@ -221,26 +212,6 @@ void clearScreen()
   Tft.fillRectangle(0, 0, 240, 320, BLACK);
 }
 
-// Returns true if the New Game button is pressed; false otherwise
-boolean isNewGamePressed()
-{
-  // A point objects holds x, y, and z coordinates
-  Point p = ts.getPoint(); 
-  p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
-  p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
-  
-  if (p.z > ts.pressureThreshhold) {
-    if ((p.x > 40 && p.x < 200) && (p.y > 295 && p.y < 317)) {
-      Tft.drawString("NEW GAME",55,300,2,RED);
-      delay(100);
-      Tft.drawString("NEW GAME",55,300,2,BLACK);
-      return true;
-    } else {
-      return false;
-    }
-  }
-  return false;
-}
 
 // Returns true if the screen is pressed; false otherwise
 boolean isScreenPressed()
@@ -261,6 +232,7 @@ void swap(char **a, char **b)
 // Shuffles the tiles
 void shuffleTiles(char** tiles)
 {
+  const int numButtons = 16;
   // Start from the last element and swap one by one.  
   for (int i = numButtons - 1; i > 0; i--) {
     // Pick a random index from 0 to i
@@ -292,6 +264,8 @@ boolean areTilesInOrder()
 void drawTiles(char** buttonText)
 {
   const int fontSize = 1;
+  const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
+  const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
   int k = 0;
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
@@ -313,11 +287,9 @@ void drawTiles(char** buttonText)
 int getTilePosNumber(int xInput, int yInput)
 {
   for (int i = 0; i < 16; i++) {
-    if ((xInput > tileText[i].getXStart() - widthButton / 2 && xInput < tileText[i].getXStart() + widthButton / 2)
-       && (yInput > tileText[i].getYStart() - heightButton / 2 && yInput < tileText[i].getYStart() + heightButton / 2)) {
-         int posNumber = i;
+	  if (tiles[i].isPressed(xInput, yInput)) {
          return i;
-       }
+      }
   }
   return -1; // Return -1 if no tile was pressed
 }
@@ -358,6 +330,7 @@ boolean canTileMove(int tilePosNumber)
   return false; // Else return false                         
 }
 
+
 // Get the blank tile's position number
 int getBlankTilePosNumber()
 {
@@ -396,6 +369,7 @@ void swapTiles(int positionNumber)
 	tileText[positionNumber].drawText();
 }
 
+
 // Displays "YOU WIN!!!" 
 void playerWins()
 {
@@ -403,6 +377,7 @@ void playerWins()
 	Tft.drawString("YOU WIN!", 55, 270, 2, WHITE);
 	delay(3000);
 }
+
 
 // Determines if the player wants to have the computer solve the puzzle for them
 void printSolveForPuzzle()
@@ -412,12 +387,25 @@ void printSolveForPuzzle()
 	Tft.drawString("SOLVE PUZZLE?", 65, 295, 1, WHITE);
 	
 	// Draw yes and no buttons
-	yesButton->draw();
-	yesButton->fill();
-	noButton->draw();
-	noButton->fill();
+	yesButton.draw();
+	yesButton.fill();
+	noButton.draw();
+	noButton.fill();
 }
 
+
+// Returns true if the new game button is pressed; false otherwise
+boolean isNewGamePressed()
+{
+	// A point objects holds x, y, and z coordinates
+	Point p = ts.getPoint();
+	p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
+	p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
+	if (p.z > ts.pressureThreshhold) {
+		return newGameButton.isPressed(p.x, p.y);
+	}
+	return false;
+}
 
 // Returns true if the yes button is pressed; false if the no button is pressed
 boolean playerWantsToSolvePuzzle()
@@ -430,12 +418,12 @@ boolean playerWantsToSolvePuzzle()
         	p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
         	p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
 		if (p.z > ts.pressureThreshhold) {
-			if (yesButton->isPressed(p.x, p.y)) {
-				yesButton->buttonDisplay();
+			if (yesButton.isPressed(p.x, p.y)) {
+				yesButton.buttonDisplay();
 				return true;
 			}
-			if (noButton->isPressed(p.x, p.y)) {
-				noButton->buttonDisplay();
+			if (noButton.isPressed(p.x, p.y)) {
+				noButton.buttonDisplay();
 				return false;
 			}
 		}
@@ -445,6 +433,16 @@ boolean playerWantsToSolvePuzzle()
 	return false;
 }
 
+// Erases the Yes and No Buttons and shows the original NewGame block
+void eraseYesAndNoButtons()
+{
+	Tft.fillRectangle(1,263,237,57,BLUE);
+	Tft.fillRectangle(40,295,160,22,CYAN);
+	Tft.drawRectangle(39,294,162,24,BLACK);
+	Tft.drawString("NEW GAME",55,300,2,BLACK);
+	hintButton.draw();
+	hintButton.fill();
+}
 
 // Prints the Puzzle to the serial port
 /*
