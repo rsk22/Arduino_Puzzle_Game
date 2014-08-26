@@ -86,7 +86,7 @@ void printPuzzle(Puzzle myPuzzle);
 
 void setup() 
 {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   Tft.init();             // Initializes the TFT library
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
@@ -203,7 +203,10 @@ void newGame()
 				if (playerWantsToSolvePuzzle()) {
 					// Solve the puzzle
 					Puzzle myPuzzle(buttonText);
-					std::deque<Puzzle> solution = solvePuzzle(myPuzzle);
+                                        printPuzzle(myPuzzle);
+					//char* goalText[16] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "0"}; 
+					//Puzzle puzzleGoal(goalText);
+					//std::deque<Puzzle> solution = solvePuzzle(myPuzzle, puzzleGoal);
                                         //printSolution(solution);
 				} else {
 					// Erase the yes and no buttons
@@ -469,7 +472,6 @@ void eraseYesAndNoButtons()
 	hintButton.fill();
 }
 
-/*
 // Prints the solution to the screen
 void printSolution(std::deque<Puzzle> mySolution)
 {
@@ -482,15 +484,16 @@ void printSolution(std::deque<Puzzle> mySolution)
 void printPuzzle(Puzzle myPuzzle)
 {
 	char** text = myPuzzle.getTileText();
-	for (int i = 0; i < 16; i++) {
-		if (i == 3 || i == 7 || i == 11) {
+	for (int i = 0; i < 15; i++) {
+		if (i % 3 == 0 && i != 0) {
 			Serial.println(text[i]);
+			Serial.print("  ");
 			} else {
 			Serial.print(text[i]);
-			Serial.print(" ");
+			Serial.print("  ");
 		}
 
 	}
 }
-*/
+
 
