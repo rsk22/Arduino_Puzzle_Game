@@ -24,8 +24,6 @@
 #include <TouchScreenGeometry.h>  // Library for drawing shapes for the touch screen
 #include <TouchScreenStrings.h> // Library for drawing strings for the touch screen
 #include <TouchScreenButtons.h> // Library for drawing buttons for the touch screen
-#include <StandardCplusplus.h> // Standard C++ library for Arduino
-#include <PuzzleSolver.h> // Library for solving the Puzzle game
 
 #ifdef SEEEDUINO
   #define YP A2   // must be an analog pin, use "An" notation!
@@ -57,9 +55,6 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 // Global instances
 Button tiles[16]; 
 Button newGameButton(39,294,162,24,BLACK, CYAN);
-Button hintButton(10, 270, 20, 20, BLACK, CYAN);
-Button yesButton(50, 270, 50, 20, BLACK, CYAN);
-Button noButton(130, 270, 50, 20, BLACK, CYAN);
 TouchScreenString tileText[16];
 
 // Function prototypes
@@ -76,13 +71,9 @@ int getTilePosNumber(int xInput, int yInput);
 boolean canTileMove(int tilePosNumber);
 int getBlankTilePosNumber();
 void swapTiles(int positionNumber);
-void playerWins();
-void printSolveForPuzzle();
+void printPlayerWins();
 boolean isNewGamePressed();
-boolean playerWantsToSolvePuzzle();
-void eraseYesAndNoButtons();
-void printSolution(std::deque<Puzzle> mySolution);
-void printPuzzle(Puzzle myPuzzle);
+
 
 void setup() 
 {
@@ -150,19 +141,10 @@ void displayGameScreen()
 		}
 	}
 	
-	// Draw the hint button
-	hintButton.setTextValues("?", 18, 275, 1, BLACK);
-	hintButton.draw();
-	hintButton.fill();
-	
 	// Set the text for the New Game button and draw it
 	newGameButton.setTextValues("NEW GAME",55,300,2,BLACK);
 	newGameButton.draw();
 	newGameButton.fill();
-
-	// Set the text values for the yes and no buttons
-	yesButton.setTextValues("YES", 63, 278, 1, BLACK);
-	noButton.setTextValues("NO", 147, 278, 1, BLACK);
     
 	// Loops until the New Game button is pressed
 	while (!isNewGamePressed()) {
@@ -196,22 +178,8 @@ void newGame()
 		int tilePosNumber = -1; 
 		// If user presses the screen 
 		if (p.z > ts.pressureThreshhold) {
-			// Check to see if the player has selected the hint button
-			if (hintButton.isPressed(p.x, p.y)) {
-				hintButton.buttonDisplay();
-				printSolveForPuzzle();
-				if (playerWantsToSolvePuzzle()) {
-					// Solve the puzzle
-					Puzzle myPuzzle(buttonText);
-					std::deque<Puzzle> solution = solvePuzzle(myPuzzle);
-                                        //printSolution(solution);
-				} else {
-					// Erase the yes and no buttons
-					eraseYesAndNoButtons();
-				}
-			}
-		// Get the selected tile's position number
-		tilePosNumber = getTilePosNumber(p.x, p.y);
+    		        // Get the selected tile's position number
+    		        tilePosNumber = getTilePosNumber(p.x, p.y);
 		}
 		// If the tile can move, swap the tiles
 		if (canTileMove(tilePosNumber) && tilePosNumber != -1)  
@@ -225,7 +193,7 @@ void newGame()
 	}
 	// Check to see if the game was won.  If so, print "YOU WIN!"
 	if (gameWon) 
-		playerWins();
+		printPlayerWins();
 	// Restart the game
 	displayGameScreen();
 }
@@ -396,26 +364,11 @@ void swapTiles(int positionNumber)
 
 
 // Displays "YOU WIN!!!" 
-void playerWins()
+void printPlayerWins()
 {
 	Tft.drawString("START!!!", 55, 270, 2, BLUE);
 	Tft.drawString("YOU WIN!", 55, 270, 2, WHITE);
 	delay(3000);
-}
-
-
-// Determines if the player wants to have the computer solve the puzzle for them
-void printSolveForPuzzle()
-{
-	// Print the "Solve Puzzle?" text 
-	Tft.fillRectangle(1,263,237,57,BLUE); 
-	Tft.drawString("SOLVE PUZZLE?", 65, 295, 1, WHITE);
-	
-	// Draw yes and no buttons
-	yesButton.draw();
-	yesButton.fill();
-	noButton.draw();
-	noButton.fill();
 }
 
 
@@ -432,65 +385,6 @@ boolean isNewGamePressed()
 	return false;
 }
 
-// Returns true if the yes button is pressed; false if the no button is pressed
-boolean playerWantsToSolvePuzzle()
-{
-	// Loop for 10 seconds. Return false if the user does not select a button by the end of 10 seconds.
-	int time = 0;
-	while (time < 10000) {
-        	// A point objects holds x, y, and z coordinates
-        	Point p = ts.getPoint();
-        	p.x = map(p.x, TS_MINX, TS_MAXX, 240, 0);
-        	p.y = map(p.y, TS_MINY,TS_MAXY, 320, 0);
-		if (p.z > ts.pressureThreshhold) {
-			if (yesButton.isPressed(p.x, p.y)) {
-				yesButton.buttonDisplay();
-				return true;
-			}
-			if (noButton.isPressed(p.x, p.y)) {
-				noButton.buttonDisplay();
-				return false;
-			}
-		}
-		time += 10;
-		delay(10);
-	}
-	return false;
-}
 
-// Erases the Yes and No Buttons and shows the original NewGame block
-void eraseYesAndNoButtons()
-{
-	Tft.fillRectangle(1,263,237,57,BLUE);
-	Tft.fillRectangle(40,295,160,22,CYAN);
-	Tft.drawRectangle(39,294,162,24,BLACK);
-	Tft.drawString("NEW GAME",55,300,2,BLACK);
-	hintButton.draw();
-	hintButton.fill();
-}
 
-/*
-// Prints the solution to the screen
-void printSolution(std::deque<Puzzle> mySolution)
-{
-	for (int i = 0; i < mySolution.size(); i++) {
-		printPuzzle(mySolution[i]);
-	}
-}
-
-// Prints the Puzzle to the serial port
-void printPuzzle(Puzzle myPuzzle)
-{
-	char** text = myPuzzle.getTileText();
-	for (int i = 0; i < 16; i++) {
-		if (i == 3 || i == 7 || i == 11) {
-			Serial.println(text[i]);
-			} else {
-			Serial.print(text[i]);
-			Serial.print(" ");
-		}
-
-	}
-}
-*/
 
