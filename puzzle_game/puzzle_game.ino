@@ -54,7 +54,7 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
 // Global instances
 Button tiles[16]; 
-Button newGameButton(39,294,162,24,BLACK, CYAN);
+Button newGameButton(39,294,162,24,BLACK,CYAN);
 TouchScreenString tileText[16];
 
 // Function prototypes
@@ -77,7 +77,6 @@ boolean isNewGamePressed();
 
 void setup() 
 {
-  //Serial.begin(9600);
   Tft.init();             // Initializes the TFT library
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
   titleScreen();
