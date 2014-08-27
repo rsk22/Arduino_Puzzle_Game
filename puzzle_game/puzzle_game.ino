@@ -58,28 +58,28 @@ Button newGameButton(39,294,162,24,BLACK,CYAN);
 TouchScreenString tileText[16];
 
 // Function prototypes
-void titleScreen();
-void displayGameScreen();
-void newGame();
-void clearScreen();
-boolean isScreenPressed();
-void swap(char **a, char **b);
-void shuffleTiles(char** tiles);
-boolean areTilesInOrder();
-void drawTiles(char** buttonText);
-int getTilePosNumber(int xInput, int yInput);
-boolean canTileMove(int tilePosNumber);
-int getBlankTilePosNumber();
-void swapTiles(int positionNumber);
-void printPlayerWins();
-boolean isNewGamePressed();
+void displayTitleScreen(); // Displays the title screen
+void displayGameScreen(); // Displays the game screen
+void newGame(); // Starts a new puzzle game
+void clearScreen(); // Clears the screen
+boolean isScreenPressed(); // Returns true if the screen is pressed; false otherwise
+void swap(char **a, char **b); // Swaps a and b
+void shuffleTiles(char** tiles); // Randomly shuffles the tiles
+boolean areTilesInOrder(); // Returns true if the tiles are in order; false otherwise
+void drawTiles(char** buttonText); // Draws the tiles to the screen
+int getTilePosNumber(int xInput, int yInput); // Gets the corresponding tile position number for the given xInput and yInput
+boolean canTileMove(int tilePosNumber);   // Returns true if the tile can move; false otherwise
+int getBlankTilePosNumber(); // Returns the blank tile's position number
+void swapTiles(int positionNumber); // Swaps the designated tile with the blank tile
+void printPlayerWins(); // Prints "YOU WIN" to the screen
+boolean isNewGamePressed(); // Returns true if the New Game button is pressed; false otherwise
 
 
 void setup() 
 {
   Tft.init();             // Initializes the TFT library
   randomSeed(analogRead(0)); // Used for shuffling the tiles 
-  titleScreen();
+  displayTitleScreen();  // Displays the title screen
 }
 
 void loop() 
@@ -88,7 +88,7 @@ void loop()
 }
 
 // Displays the title screen
-void titleScreen()
+void displayTitleScreen()
 {  
 	Tft.drawString("SLIDING PUZZLE GAME",4,10,1,YELLOW);
 	Tft.drawString("by GARRY SPENCER",23,35,1,WHITE);
@@ -255,22 +255,23 @@ boolean areTilesInOrder()
 // Draws the tiles
 void drawTiles(char** buttonText)
 {
-  const int fontSize = 1;
+  const int fontSize = 1; // font size for the text
   const int xButtonText[] = {25, 85, 145, 195}; // x-coordinates for the buttons' text
   const int yButtonText[] = {45, 105, 165, 225}; // y-coordinates for the buttons' text
-  int k = 0;
+  int posNum = 0; // Tile position number
+  // Loop through each tile and draw it
   for (int j = 0; j < 4; j++) {
     for (int i = 0; i < 4; i++) {
-      int temp = String(buttonText[k]).toInt();
+      int temp = String(buttonText[posNum]).toInt();
       if (temp != 0) {
-        tileText[k].setValues(buttonText[k], xButtonText[i], yButtonText[j], fontSize, BLACK);
-        tileText[k].drawText();
+        tileText[posNum].setValues(buttonText[posNum], xButtonText[i], yButtonText[j], fontSize, BLACK);
+        tileText[posNum].drawText();
+      // Draws the "0" tile as a blank tile
+	  } else {
+        tileText[posNum].setValues("", xButtonText[i], yButtonText[j], fontSize, BLACK);
+        tileText[posNum].drawText();
       }
-      else {
-        tileText[k].setValues("", xButtonText[i], yButtonText[j], fontSize, BLACK);
-        tileText[k].drawText();
-      }
-      k++;
+      posNum++;
     }
   }
 }
@@ -278,10 +279,10 @@ void drawTiles(char** buttonText)
 // Returns the tile's position number
 int getTilePosNumber(int xInput, int yInput)
 {
+  // Iterate through each tile and determine if it was pressed
   for (int i = 0; i < 16; i++) {
-	  if (tiles[i].isPressed(xInput, yInput)) {
+	  if (tiles[i].isPressed(xInput, yInput)) 
          return i;
-      }
   }
   return -1; // Return -1 if no tile was pressed
 }
